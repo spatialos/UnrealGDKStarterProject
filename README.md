@@ -1,11 +1,11 @@
-# SpatialGDK sample game: Unreal project demonstrating SpatialOS integration
+# SpatialGDK Starter Sroject: Unreal project demonstrating SpatialOS integration
 
 * Repository: [github.com/improbable/unreal-gdk-starter-project](https://github.com/improbable/unreal-gdk-starter-project)
 * By: [improbable.io](https://improbable.io/)
 * License: Use of the contents of this repository is subject to the [Improbable license](LICENSE.md). <br/>
 (TODO: Check the license: [JIRA ticket DEV-2087](https://improbableio.atlassian.net/browse/DEV-2087))
 
-Use the SpatialOS Unreal GDK Sample Game to explore how Unreal projects integrate with [SpatialOS](https://improbable.io/games) local deployment. Use the Unreal GDK Sample Game with the [SpatialOS unreal GDK](https://github.com/improbable/unreal-gdk/blob/master).
+Use the SpatialOS Unreal GDK Starter Project to explore how Unreal projects integrate with [SpatialOS](https://improbable.io/games) local deployment. Use the Unreal GDK Starter Project with the [SpatialOS unreal GDK](https://github.com/improbable/unreal-gdk/blob/master).
 
 (TODO: For all links - fix repo link to Unreal GDK for external users - [JIRA TICKET](https://improbableio.atlassian.net/browse/UNR-304))
 
