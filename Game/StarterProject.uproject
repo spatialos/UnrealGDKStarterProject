@@ -1,0 +1,22 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{594FE353-43A3-F1B1-D054-41BA6971F9AF}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "StarterProject",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"SpatialGDK"
+			]
+		},
+		{
+			"Name": "SpatialGDK",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
