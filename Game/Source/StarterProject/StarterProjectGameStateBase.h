@@ -10,7 +10,4 @@ UCLASS()
 class STARTERPROJECT_API AStarterProjectGameStateBase : public AGameStateBase
 {
 	GENERATED_BODY()
-
-public:
-	void FakeServerHasBegunPlay();
 };
