@@ -26,5 +26,5 @@ Game/Scripts
 spatial/schema/improbable/unreal/gdk
 
 # SpatialGDK generated files
-Game/Source/StarterProject/Generated
-spatial/schema/improbable/unreal/generated
+#Game/Source/StarterProject/Generated
+#spatial/schema/improbable/unreal/generated
