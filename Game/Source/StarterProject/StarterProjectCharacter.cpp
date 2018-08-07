@@ -57,6 +57,12 @@ void AStarterProjectCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AStarterProjectCharacter::OnSpatialAuthorityChange()
+{
+	Super::OnSpatialAuthorityChange();
+	UE_LOG(LogTemp, Log, TEXT("Received authority change for %s"), *this->GetName());
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -151,5 +157,16 @@ bool AStarterProjectCharacter::TestRPC_Validate()
 
 void AStarterProjectCharacter::TestRPC_Implementation()
 {
+	UE_LOG(LogTemp, Log, TEXT("Server RPC being called"));
+	TestClientRPC();
+}
 
+bool AStarterProjectCharacter::TestClientRPC_Validate()
+{
+	return true;
+}
+
+void AStarterProjectCharacter::TestClientRPC_Implementation()
+{
+	UE_LOG(LogTemp, Log, TEXT("Client RPC being called"));
 }

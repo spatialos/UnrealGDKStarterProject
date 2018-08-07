@@ -23,6 +23,7 @@ public:
 	AStarterProjectCharacter();
 
 	virtual void BeginPlay() override;
+	virtual void OnSpatialAuthorityChange() override;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -65,8 +66,11 @@ protected:
 
 	void Interact();
 
-	UFUNCTION(Server, Reliable, WithValidation)
+	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
 	void TestRPC();
+
+	UFUNCTION(Client, Reliable, WithValidation)
+	void TestClientRPC();
 
 	UFUNCTION(NetMulticast, Unreliable, WithValidation)
 	void TestMulticast();
