@@ -55,6 +55,7 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::Init(USpatialInterop* InI
 	RPCToSenderMap.Emplace("ClientAckGoodMove", &USpatialTypeBinding_StarterProjectCharacter_BP_C::ClientAckGoodMove_SendRPC);
 	RPCToSenderMap.Emplace("SetArrOfStructs1", &USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs1_SendRPC);
 	RPCToSenderMap.Emplace("SetArrOfStructs2", &USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs2_SendRPC);
+	RPCToSenderMap.Emplace("RPCStructInput", &USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_SendRPC);
 	RPCToSenderMap.Emplace("TestRPC", &USpatialTypeBinding_StarterProjectCharacter_BP_C::TestRPC_SendRPC);
 	RPCToSenderMap.Emplace("ServerMoveOld", &USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMoveOld_SendRPC);
 	RPCToSenderMap.Emplace("ServerMoveNoBase", &USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMoveNoBase_SendRPC);
@@ -72,52 +73,49 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::Init(USpatialInterop* InI
 	RepHandleToPropertyMap.Add(3, FRepHandleData(Class, {"bTearOff"}, {0}, COND_None, REPNOTIFY_OnChanged));
 	RepHandleToPropertyMap.Add(4, FRepHandleData(Class, {"bCanBeDamaged"}, {0}, COND_None, REPNOTIFY_OnChanged));
 	RepHandleToPropertyMap.Add(5, FRepHandleData(Class, {"RemoteRole"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(6, FRepHandleData(Class, {"ReplicatedMovement"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(7, FRepHandleData(Class, {"AttachmentReplication", "AttachParent"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(8, FRepHandleData(Class, {"AttachmentReplication", "LocationOffset"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(9, FRepHandleData(Class, {"AttachmentReplication", "RelativeScale3D"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(10, FRepHandleData(Class, {"AttachmentReplication", "RotationOffset"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(11, FRepHandleData(Class, {"AttachmentReplication", "AttachSocket"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(12, FRepHandleData(Class, {"AttachmentReplication", "AttachComponent"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(6, FRepHandleData(Class, {"ReplicatedMovement"}, {0}, COND_SimulatedOrPhysicsNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(7, FRepHandleData(Class, {"AttachmentReplication", "AttachParent"}, {0, 0}, COND_Custom, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(8, FRepHandleData(Class, {"AttachmentReplication", "LocationOffset"}, {0, 0}, COND_Custom, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(9, FRepHandleData(Class, {"AttachmentReplication", "RelativeScale3D"}, {0, 0}, COND_Custom, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(10, FRepHandleData(Class, {"AttachmentReplication", "RotationOffset"}, {0, 0}, COND_Custom, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(11, FRepHandleData(Class, {"AttachmentReplication", "AttachSocket"}, {0, 0}, COND_Custom, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(12, FRepHandleData(Class, {"AttachmentReplication", "AttachComponent"}, {0, 0}, COND_Custom, REPNOTIFY_OnChanged));
 	RepHandleToPropertyMap.Add(13, FRepHandleData(Class, {"Owner"}, {0}, COND_None, REPNOTIFY_OnChanged));
 	RepHandleToPropertyMap.Add(14, FRepHandleData(Class, {"Role"}, {0}, COND_None, REPNOTIFY_OnChanged));
 	RepHandleToPropertyMap.Add(15, FRepHandleData(Class, {"Instigator"}, {0}, COND_None, REPNOTIFY_OnChanged));
 	RepHandleToPropertyMap.Add(16, FRepHandleData(Class, {"PlayerState"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(17, FRepHandleData(Class, {"RemoteViewPitch"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(17, FRepHandleData(Class, {"RemoteViewPitch"}, {0}, COND_SkipOwner, REPNOTIFY_OnChanged));
 	RepHandleToPropertyMap.Add(18, FRepHandleData(Class, {"Controller"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(19, FRepHandleData(Class, {"ReplicatedBasedMovement", "MovementBase"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(20, FRepHandleData(Class, {"ReplicatedBasedMovement", "BoneName"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(21, FRepHandleData(Class, {"ReplicatedBasedMovement", "Location"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(22, FRepHandleData(Class, {"ReplicatedBasedMovement", "Rotation"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(23, FRepHandleData(Class, {"ReplicatedBasedMovement", "bServerHasBaseComponent"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(24, FRepHandleData(Class, {"ReplicatedBasedMovement", "bRelativeRotation"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(25, FRepHandleData(Class, {"ReplicatedBasedMovement", "bServerHasVelocity"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(26, FRepHandleData(Class, {"AnimRootMotionTranslationScale"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(27, FRepHandleData(Class, {"ReplicatedServerLastTransformUpdateTimeStamp"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(28, FRepHandleData(Class, {"ReplicatedMovementMode"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(29, FRepHandleData(Class, {"bIsCrouched"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(19, FRepHandleData(Class, {"ReplicatedBasedMovement", "MovementBase"}, {0, 0}, COND_SimulatedOnly, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(20, FRepHandleData(Class, {"ReplicatedBasedMovement", "BoneName"}, {0, 0}, COND_SimulatedOnly, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(21, FRepHandleData(Class, {"ReplicatedBasedMovement", "Location"}, {0, 0}, COND_SimulatedOnly, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(22, FRepHandleData(Class, {"ReplicatedBasedMovement", "Rotation"}, {0, 0}, COND_SimulatedOnly, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(23, FRepHandleData(Class, {"ReplicatedBasedMovement", "bServerHasBaseComponent"}, {0, 0}, COND_SimulatedOnly, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(24, FRepHandleData(Class, {"ReplicatedBasedMovement", "bRelativeRotation"}, {0, 0}, COND_SimulatedOnly, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(25, FRepHandleData(Class, {"ReplicatedBasedMovement", "bServerHasVelocity"}, {0, 0}, COND_SimulatedOnly, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(26, FRepHandleData(Class, {"AnimRootMotionTranslationScale"}, {0}, COND_SimulatedOnly, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(27, FRepHandleData(Class, {"ReplicatedServerLastTransformUpdateTimeStamp"}, {0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(28, FRepHandleData(Class, {"ReplicatedMovementMode"}, {0}, COND_SimulatedOnly, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(29, FRepHandleData(Class, {"bIsCrouched"}, {0}, COND_SimulatedOnly, REPNOTIFY_OnChanged));
 	RepHandleToPropertyMap.Add(30, FRepHandleData(Class, {"JumpMaxHoldTime"}, {0}, COND_None, REPNOTIFY_OnChanged));
 	RepHandleToPropertyMap.Add(31, FRepHandleData(Class, {"JumpMaxCount"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(32, FRepHandleData(Class, {"RepRootMotion", "bIsActive"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(33, FRepHandleData(Class, {"RepRootMotion", "AnimMontage"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(34, FRepHandleData(Class, {"RepRootMotion", "Position"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(35, FRepHandleData(Class, {"RepRootMotion", "Location"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(36, FRepHandleData(Class, {"RepRootMotion", "Rotation"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(37, FRepHandleData(Class, {"RepRootMotion", "MovementBase"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(38, FRepHandleData(Class, {"RepRootMotion", "MovementBaseBoneName"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(39, FRepHandleData(Class, {"RepRootMotion", "bRelativePosition"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(40, FRepHandleData(Class, {"RepRootMotion", "bRelativeRotation"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(41, FRepHandleData(Class, {"RepRootMotion", "AuthoritativeRootMotion"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(42, FRepHandleData(Class, {"RepRootMotion", "Acceleration"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(43, FRepHandleData(Class, {"RepRootMotion", "LinearVelocity"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(44, FRepHandleData(Class, {"MyCppStructInst", "bMyCppStructBool"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(45, FRepHandleData(Class, {"MyCppStructInst", "myCppStructVec"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(46, FRepHandleData(Class, {"MyCppStructArr"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(47, FRepHandleData(Class, {"MyBool"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(48, FRepHandleData(Class, {"MyArrofBools"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(49, FRepHandleData(Class, {"MyStructVar", "StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(50, FRepHandleData(Class, {"MyStructVar", "StructVec_4_734F338F470A88C85C79289BBB7E8467"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(51, FRepHandleData(Class, {"MyArrofStructs"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(32, FRepHandleData(Class, {"RepRootMotion", "bIsActive"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(33, FRepHandleData(Class, {"RepRootMotion", "AnimMontage"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(34, FRepHandleData(Class, {"RepRootMotion", "Position"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(35, FRepHandleData(Class, {"RepRootMotion", "Location"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(36, FRepHandleData(Class, {"RepRootMotion", "Rotation"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(37, FRepHandleData(Class, {"RepRootMotion", "MovementBase"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(38, FRepHandleData(Class, {"RepRootMotion", "MovementBaseBoneName"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(39, FRepHandleData(Class, {"RepRootMotion", "bRelativePosition"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(40, FRepHandleData(Class, {"RepRootMotion", "bRelativeRotation"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(41, FRepHandleData(Class, {"RepRootMotion", "AuthoritativeRootMotion"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(42, FRepHandleData(Class, {"RepRootMotion", "Acceleration"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(43, FRepHandleData(Class, {"RepRootMotion", "LinearVelocity"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(44, FRepHandleData(Class, {"MyBool"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(45, FRepHandleData(Class, {"MyArrofBools"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(46, FRepHandleData(Class, {"MyStructVar", "StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(47, FRepHandleData(Class, {"MyStructVar", "StructVec_4_734F338F470A88C85C79289BBB7E8467"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(48, FRepHandleData(Class, {"MyArrofStructs"}, {0}, COND_None, REPNOTIFY_OnChanged));
 
 	// Populate HandoverHandleToPropertyMap.
 	HandoverHandleToPropertyMap.Add(1, FHandoverHandleData(Class, {"CharacterMovement", "MovementMode"}));
@@ -210,6 +208,7 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::BindToView(bool bIsClient
 	using ServerRPCCommandTypes = improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands;
 	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Setarrofstructs1>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs1_OnRPCPayload, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Setarrofstructs2>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs2_OnRPCPayload, this, std::placeholders::_1)));
+	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Rpcstructinput>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_OnRPCPayload, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Testrpc>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::TestRPC_OnRPCPayload, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Servermoveold>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMoveOld_OnRPCPayload, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Servermovenobase>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMoveNoBase_OnRPCPayload, this, std::placeholders::_1)));
@@ -219,6 +218,7 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::BindToView(bool bIsClient
 	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Servermove>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMove_OnRPCPayload, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Setarrofstructs1>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs1_OnCommandResponse, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Setarrofstructs2>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs2_OnCommandResponse, this, std::placeholders::_1)));
+	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Rpcstructinput>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_OnCommandResponse, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Testrpc>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::TestRPC_OnCommandResponse, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Servermoveold>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMoveOld_OnCommandResponse, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Servermovenobase>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMoveNoBase_OnCommandResponse, this, std::placeholders::_1)));
@@ -1156,68 +1156,14 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerSendUpdate_MultiCli
 			}
 			break;
 		}
-		case 44: // field_mycppstructinst0_bmycppstructbool0
-		{
-			bool Value = static_cast<UBoolProperty*>(Property)->GetPropertyValue(Data);
-
-			OutUpdate.set_field_mycppstructinst0_bmycppstructbool0(Value);
-			break;
-		}
-		case 45: // field_mycppstructinst0_mycppstructvec0
-		{
-			const FVector& Value = *(reinterpret_cast<FVector const*>(Data));
-
-			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 45);
-			TSet<const UObject*> UnresolvedObjects;
-			TArray<uint8> ValueData;
-			FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
-			bool bSuccess = true;
-			(const_cast<FVector&>(Value)).NetSerialize(ValueDataWriter, PackageMap, bSuccess);
-			checkf(bSuccess, TEXT("NetSerialize on FVector failed."));
-			const std::string& Result = (std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
-			if (UnresolvedObjects.Num() == 0)
-			{
-				OutUpdate.set_field_mycppstructinst0_mycppstructvec0(Result);
-			}
-			else
-			{
-				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 45);
-			}
-			break;
-		}
-		case 46: // field_mycppstructarr0
-		{
-			const TArray<FMyCppStruct>& Value = *(reinterpret_cast<TArray<FMyCppStruct> const*>(Data));
-
-			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 46);
-			TSet<const UObject*> UnresolvedObjects;
-			::worker::List<std::string> List;
-			for(int i = 0; i < Value.Num(); i++)
-			{
-				TArray<uint8> ValueData;
-				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
-				FMyCppStruct::StaticStruct()->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyCppStruct*>(&Value[i])));
-				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
-			}
-			const ::worker::List<std::string>& Result = (List);
-			if (UnresolvedObjects.Num() == 0)
-			{
-				OutUpdate.set_field_mycppstructarr0(Result);
-			}
-			else
-			{
-				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 46);
-			}
-			break;
-		}
-		case 47: // field_mybool0
+		case 44: // field_mybool0
 		{
 			bool Value = static_cast<UBoolProperty*>(Property)->GetPropertyValue(Data);
 
 			OutUpdate.set_field_mybool0(Value);
 			break;
 		}
-		case 48: // field_myarrofbools0
+		case 45: // field_myarrofbools0
 		{
 			const TArray<bool>& Value = *(reinterpret_cast<TArray<bool> const*>(Data));
 
@@ -1229,18 +1175,18 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerSendUpdate_MultiCli
 			OutUpdate.set_field_myarrofbools0(List);
 			break;
 		}
-		case 49: // field_mystructvar0_structbool176b6bada4ba8fea4761b938495dea0e10
+		case 46: // field_mystructvar0_structbool176b6bada4ba8fea4761b938495dea0e10
 		{
 			bool Value = static_cast<UBoolProperty*>(Property)->GetPropertyValue(Data);
 
 			OutUpdate.set_field_mystructvar0_structbool176b6bada4ba8fea4761b938495dea0e10(Value);
 			break;
 		}
-		case 50: // field_mystructvar0_structvec4734f338f470a88c85c79289bbb7e84670
+		case 47: // field_mystructvar0_structvec4734f338f470a88c85c79289bbb7e84670
 		{
 			const FVector& Value = *(reinterpret_cast<FVector const*>(Data));
 
-			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 50);
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 47);
 			TSet<const UObject*> UnresolvedObjects;
 			TArray<uint8> ValueData;
 			FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
@@ -1254,24 +1200,24 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerSendUpdate_MultiCli
 			}
 			else
 			{
-				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 50);
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 47);
 			}
 			break;
 		}
-		case 51: // field_myarrofstructs0
+		case 48: // field_myarrofstructs0
 		{
-			struct FMyStruct__pf3826073315_Blob {uint8 Data[16];};
-			UStruct* FMyStruct__pf3826073315 = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStruct.MyStruct"), NULL, LOAD_None, NULL);
-			const TArray<FMyStruct__pf3826073315_Blob>& Value = *(reinterpret_cast<TArray<FMyStruct__pf3826073315_Blob> const*>(Data));
+			struct FMyStruct__pf3826073315 {uint8 Data[16];};
+			UStruct* FMyStruct__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStruct.MyStruct"), NULL, LOAD_None, NULL);
+			const TArray<FMyStruct__pf3826073315>& Value = *(reinterpret_cast<TArray<FMyStruct__pf3826073315> const*>(Data));
 
-			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 51);
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 48);
 			TSet<const UObject*> UnresolvedObjects;
 			::worker::List<std::string> List;
 			for(int i = 0; i < Value.Num(); i++)
 			{
 				TArray<uint8> ValueData;
 				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
-				FMyStruct__pf3826073315->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyStruct__pf3826073315_Blob*>(&Value[i])));
+				FMyStruct__pf3826073315_Struct->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyStruct__pf3826073315*>(&Value[i])));
 				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
 			}
 			const ::worker::List<std::string>& Result = (List);
@@ -1281,7 +1227,7 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerSendUpdate_MultiCli
 			}
 			else
 			{
-				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 51);
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 48);
 			}
 			break;
 		}
@@ -2680,91 +2626,10 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ReceiveUpdate_MultiClient
 				Handle);
 		}
 	}
-	if (!Update.field_mycppstructinst0_bmycppstructbool0().empty())
-	{
-		// field_mycppstructinst0_bmycppstructbool0
-		uint16 Handle = 44;
-		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
-		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
-		{
-			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
-			bool Value = static_cast<UBoolProperty*>(RepData->Property)->GetPropertyValue(PropertyData);
-
-			Value = (*Update.field_mycppstructinst0_bmycppstructbool0().data());
-
-			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
-
-			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
-				*Interop->GetSpatialOS()->GetWorkerId(),
-				*ActorChannel->Actor->GetName(),
-				ActorChannel->GetEntityId().ToSpatialEntityId(),
-				*RepData->Property->GetName(),
-				Handle);
-		}
-	}
-	if (!Update.field_mycppstructinst0_mycppstructvec0().empty())
-	{
-		// field_mycppstructinst0_mycppstructvec0
-		uint16 Handle = 45;
-		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
-		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
-		{
-			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
-			FVector Value = *(reinterpret_cast<FVector const*>(PropertyData));
-
-			auto& ValueDataStr = (*Update.field_mycppstructinst0_mycppstructvec0().data());
-			TArray<uint8> ValueData;
-			ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
-			FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
-			bool bSuccess = true;
-			Value.NetSerialize(ValueDataReader, PackageMap, bSuccess);
-			checkf(bSuccess, TEXT("NetSerialize on FVector failed."));
-
-			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
-
-			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
-				*Interop->GetSpatialOS()->GetWorkerId(),
-				*ActorChannel->Actor->GetName(),
-				ActorChannel->GetEntityId().ToSpatialEntityId(),
-				*RepData->Property->GetName(),
-				Handle);
-		}
-	}
-	if (!Update.field_mycppstructarr0().empty())
-	{
-		// field_mycppstructarr0
-		uint16 Handle = 46;
-		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
-		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
-		{
-			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
-			TArray<FMyCppStruct> Value = *(reinterpret_cast<TArray<FMyCppStruct> *>(PropertyData));
-
-			auto& List = (*Update.field_mycppstructarr0().data());
-			Value.SetNum(List.size());
-			for(int i = 0; i < List.size(); i++)
-			{
-				auto& ValueDataStr = List[i];
-				TArray<uint8> ValueData;
-				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
-				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
-				FMyCppStruct::StaticStruct()->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
-			}
-
-			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
-
-			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
-				*Interop->GetSpatialOS()->GetWorkerId(),
-				*ActorChannel->Actor->GetName(),
-				ActorChannel->GetEntityId().ToSpatialEntityId(),
-				*RepData->Property->GetName(),
-				Handle);
-		}
-	}
 	if (!Update.field_mybool0().empty())
 	{
 		// field_mybool0
-		uint16 Handle = 47;
+		uint16 Handle = 44;
 		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
 		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
 		{
@@ -2786,7 +2651,7 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ReceiveUpdate_MultiClient
 	if (!Update.field_myarrofbools0().empty())
 	{
 		// field_myarrofbools0
-		uint16 Handle = 48;
+		uint16 Handle = 45;
 		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
 		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
 		{
@@ -2813,7 +2678,7 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ReceiveUpdate_MultiClient
 	if (!Update.field_mystructvar0_structbool176b6bada4ba8fea4761b938495dea0e10().empty())
 	{
 		// field_mystructvar0_structbool176b6bada4ba8fea4761b938495dea0e10
-		uint16 Handle = 49;
+		uint16 Handle = 46;
 		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
 		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
 		{
@@ -2835,7 +2700,7 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ReceiveUpdate_MultiClient
 	if (!Update.field_mystructvar0_structvec4734f338f470a88c85c79289bbb7e84670().empty())
 	{
 		// field_mystructvar0_structvec4734f338f470a88c85c79289bbb7e84670
-		uint16 Handle = 50;
+		uint16 Handle = 47;
 		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
 		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
 		{
@@ -2863,14 +2728,14 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ReceiveUpdate_MultiClient
 	if (!Update.field_myarrofstructs0().empty())
 	{
 		// field_myarrofstructs0
-		uint16 Handle = 51;
+		uint16 Handle = 48;
 		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
 		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
 		{
 			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
-			struct FMyStruct__pf3826073315_Blob {uint8 Data[16];};
-			UStruct* FMyStruct__pf3826073315 = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStruct.MyStruct"), NULL, LOAD_None, NULL);
-			TArray<FMyStruct__pf3826073315_Blob> Value = *(reinterpret_cast<TArray<FMyStruct__pf3826073315_Blob> *>(PropertyData));
+			struct FMyStruct__pf3826073315 {uint8 Data[16];};
+			UStruct* FMyStruct__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStruct.MyStruct"), NULL, LOAD_None, NULL);
+			TArray<FMyStruct__pf3826073315> Value = *(reinterpret_cast<TArray<FMyStruct__pf3826073315> *>(PropertyData));
 
 			auto& List = (*Update.field_myarrofstructs0().data());
 			Value.SetNum(List.size());
@@ -2880,7 +2745,7 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ReceiveUpdate_MultiClient
 				TArray<uint8> ValueData;
 				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
 				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
-				FMyStruct__pf3826073315->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+				FMyStruct__pf3826073315_Struct->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
 			}
 
 			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
@@ -3569,6 +3434,61 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs2_SendRPC(
 			return {RequestId.Id};
 	};
 	Interop->InvokeRPCSendHandler_Internal(Sender, /*bReliable*/ true);
+}
+void USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject)
+{
+	struct FMyStruct__pf3826073315
+	{
+		bool StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1;
+		FVector StructVec_4_734F338F470A88C85C79289BBB7E8467;
+	};
+	struct StarterProjectCharacter_BP_C_eventRPCStructInput_Parms
+	{
+		bool BoolIn;
+		FMyStruct__pf3826073315 StructIn;
+	};
+
+	StarterProjectCharacter_BP_C_eventRPCStructInput_Parms StructuredParams = *static_cast<StarterProjectCharacter_BP_C_eventRPCStructInput_Parms*>(Parameters);
+
+	auto Sender = [this, Connection, TargetObject, StructuredParams]() mutable -> FRPCCommandRequestResult
+	{
+		// Resolve TargetObject.
+		improbable::unreal::UnrealObjectRef TargetObjectRef = PackageMap->GetUnrealObjectRefFromNetGUID(PackageMap->GetNetGUIDFromObject(TargetObject));
+		if (TargetObjectRef == SpatialConstants::UNRESOLVED_OBJECT_REF)
+		{
+			UE_LOG(LogSpatialGDKInterop, Log, TEXT("%s: RPC RPCStructInput queued. Target object is unresolved."), *Interop->GetSpatialOS()->GetWorkerId());
+			return {TargetObject};
+		}
+
+		// Build RPC Payload.
+		improbable::unreal::generated::starterprojectcharacterbpc::RPCStructInputRequest RPCPayload;
+		{
+			RPCPayload.set_field_boolin0(StructuredParams.BoolIn);
+		}
+		{
+			RPCPayload.set_field_structin0_structbool176b6bada4ba8fea4761b938495dea0e10(StructuredParams.StructIn.StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1);
+		}
+		{
+			TSet<const UObject*> UnresolvedObjects;
+			TArray<uint8> ValueData;
+			FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+			bool bSuccess = true;
+			(const_cast<FVector&>(StructuredParams.StructIn.StructVec_4_734F338F470A88C85C79289BBB7E8467)).NetSerialize(ValueDataWriter, PackageMap, bSuccess);
+			checkf(bSuccess, TEXT("NetSerialize on FVector failed."));
+			RPCPayload.set_field_structin0_structvec4734f338f470a88c85c79289bbb7e84670(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+		}
+
+		// Send RPC
+		RPCPayload.set_target_subobject_offset(TargetObjectRef.offset());
+		UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Sending RPC: RPCStructInput, target: %s %s"),
+			*Interop->GetSpatialOS()->GetWorkerId(),
+			*TargetObject->GetName(),
+			*ObjectRefToString(TargetObjectRef));
+
+			auto RequestId = Connection->SendCommandRequest<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Rpcstructinput>(TargetObjectRef.entity(), RPCPayload, 0);
+			return {RequestId.Id};
+	};
+	Interop->InvokeRPCSendHandler_Internal(Sender, /*bReliable*/ false);
 }
 void USpatialTypeBinding_StarterProjectCharacter_BP_C::TestRPC_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject)
 {
@@ -4972,6 +4892,82 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs2_OnRPCPay
 	};
 	Interop->InvokeRPCReceiveHandler_Internal(Receiver);
 }
+void USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_OnRPCPayload(const worker::CommandRequestOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Rpcstructinput>& Op)
+{
+	auto Receiver = [this, Op]() mutable -> FRPCCommandResponseResult
+	{
+		improbable::unreal::UnrealObjectRef TargetObjectRef{Op.EntityId, Op.Request.target_subobject_offset(), {}, {}};
+		FNetworkGUID TargetNetGUID = PackageMap->GetNetGUIDFromUnrealObjectRef(TargetObjectRef);
+		if (!TargetNetGUID.IsValid())
+		{
+			// A legal static object reference should never be unresolved.
+			checkf(TargetObjectRef.path().empty(), TEXT("A stably named object should not need resolution."));
+			UE_LOG(LogSpatialGDKInterop, Log, TEXT("%s: RPCStructInput_OnRPCPayload: Target object %s is not resolved on this worker."),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ObjectRefToString(TargetObjectRef));
+			return {TargetObjectRef};
+		}
+		UObject* TargetObject = PackageMap->GetObjectFromNetGUID(TargetNetGUID, false);
+		checkf(TargetObject, TEXT("%s: RPCStructInput_OnRPCPayload: Object Ref %s (NetGUID %s) does not correspond to a UObject."),
+			*Interop->GetSpatialOS()->GetWorkerId(),
+			*ObjectRefToString(TargetObjectRef),
+			*TargetNetGUID.ToString());
+
+		// Declare parameters.
+		struct FMyStruct__pf3826073315
+		{
+			bool StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1;
+			FVector StructVec_4_734F338F470A88C85C79289BBB7E8467;
+		};
+		struct StarterProjectCharacter_BP_C_eventRPCStructInput_Parms
+		{
+			bool BoolIn;
+			FMyStruct__pf3826073315 StructIn;
+		};
+
+		StarterProjectCharacter_BP_C_eventRPCStructInput_Parms Parameters;
+
+		// Extract from request data.
+		{
+			Parameters.BoolIn = Op.Request.field_boolin0();
+		}
+		{
+			Parameters.StructIn.StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1 = Op.Request.field_structin0_structbool176b6bada4ba8fea4761b938495dea0e10();
+		}
+		{
+			auto& ValueDataStr = Op.Request.field_structin0_structvec4734f338f470a88c85c79289bbb7e84670();
+			TArray<uint8> ValueData;
+			ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+			FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+			bool bSuccess = true;
+			Parameters.StructIn.StructVec_4_734F338F470A88C85C79289BBB7E8467.NetSerialize(ValueDataReader, PackageMap, bSuccess);
+			checkf(bSuccess, TEXT("NetSerialize on FVector failed."));
+		}
+
+		// Call implementation.
+		UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received RPC: RPCStructInput, target: %s %s"),
+			*Interop->GetSpatialOS()->GetWorkerId(),
+			*TargetObject->GetName(),
+			*ObjectRefToString(TargetObjectRef));
+
+		if (UFunction* Function = TargetObject->FindFunction(FName(TEXT("RPCStructInput"))))
+		{
+			TargetObject->ProcessEvent(Function, &Parameters);
+		}
+		else
+		{
+			UE_LOG(LogSpatialGDKInterop, Error, TEXT("%s: RPCStructInput_OnRPCPayload: Function not found. Object: %s, Function: RPCStructInput."),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*TargetObject->GetFullName());
+		}
+
+		// Send command response.
+		TSharedPtr<worker::Connection> Connection = Interop->GetSpatialOS()->GetConnection().Pin();
+		Connection->SendCommandResponse<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Rpcstructinput>(Op.RequestId, {});
+		return {};
+	};
+	Interop->InvokeRPCReceiveHandler_Internal(Receiver);
+}
 void USpatialTypeBinding_StarterProjectCharacter_BP_C::TestRPC_OnRPCPayload(const worker::CommandRequestOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Testrpc>& Op)
 {
 	auto Receiver = [this, Op]() mutable -> FRPCCommandResponseResult
@@ -5751,6 +5747,11 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs1_OnComman
 void USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs2_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Setarrofstructs2>& Op)
 {
 	Interop->HandleCommandResponse_Internal(TEXT("SetArrOfStructs2"), Op.RequestId.Id, Op.EntityId, Op.StatusCode, FString(UTF8_TO_TCHAR(Op.Message.c_str())));
+}
+
+void USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Rpcstructinput>& Op)
+{
+	Interop->HandleCommandResponse_Internal(TEXT("RPCStructInput"), Op.RequestId.Id, Op.EntityId, Op.StatusCode, FString(UTF8_TO_TCHAR(Op.Message.c_str())));
 }
 
 void USpatialTypeBinding_StarterProjectCharacter_BP_C::TestRPC_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Testrpc>& Op)
