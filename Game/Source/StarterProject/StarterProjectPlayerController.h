@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Spatial)
 class STARTERPROJECT_API AStarterProjectPlayerController : public APlayerController
 {
 	GENERATED_BODY()
