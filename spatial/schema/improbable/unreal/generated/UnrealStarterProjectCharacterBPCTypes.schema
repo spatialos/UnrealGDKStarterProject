@@ -1,0 +1,24 @@
+// Copyright (c) Improbable Worlds Ltd, All Rights Reserved
+// Note that this file has been generated automatically
+package improbable.unreal.generated.starterprojectcharacterbpc;
+
+import "improbable/unreal/gdk/core_types.schema";
+
+type SetArrOfStructs1Request {
+	uint32 target_subobject_offset = 1;
+}
+type SetArrOfStructs2Request {
+	uint32 target_subobject_offset = 1;
+}
+type RPCStructInputRequest {
+	uint32 target_subobject_offset = 1;
+	bool field_boolin0 = 2;
+	bool field_structin0_structbool176b6bada4ba8fea4761b938495dea0e10 = 3;
+	bytes field_structin0_structvec4734f338f470a88c85c79289bbb7e84670 = 4;
+}
+type UpdateNestedStructCppRequest {
+	uint32 target_subobject_offset = 1;
+}
+type UpdateNestedStructBPRequest {
+	uint32 target_subobject_offset = 1;
+}

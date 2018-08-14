@@ -7,6 +7,29 @@
 #include "GameFramework/Character.h"
 #include "StarterProjectCharacter.generated.h"
 
+USTRUCT(BlueprintType)
+struct FMyCppStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	bool b;
+	UPROPERTY(BlueprintReadWrite)
+	FVector V;
+};
+
+USTRUCT(BlueprintType)
+struct FMyCppNestedStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FMyCppStruct> StructArr;
+	UPROPERTY(BlueprintReadWrite)
+	TArray<bool> BoolArr;
+};
+
+
 UCLASS(config=Game)
 class AStarterProjectCharacter : public ACharacter
 {
@@ -32,6 +55,18 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	FMyCppStruct MyCppStructIns;
+
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	FMyCppNestedStruct MyNestedStructIns;
+
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	TArray<FMyCppStruct> MyCppStructArr;
+
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	TArray<FMyCppNestedStruct> MyNestedStructArr;
 
 protected:
 

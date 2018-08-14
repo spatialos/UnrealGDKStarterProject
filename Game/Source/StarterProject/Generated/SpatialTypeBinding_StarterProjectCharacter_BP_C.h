@@ -75,6 +75,8 @@ private:
 	void SetArrOfStructs1_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject);
 	void SetArrOfStructs2_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject);
 	void RPCStructInput_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject);
+	void UpdateNestedStructCpp_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject);
+	void UpdateNestedStructBP_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject);
 	void TestRPC_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject);
 	void ServerMoveOld_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject);
 	void ServerMoveNoBase_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject);
@@ -98,6 +100,8 @@ private:
 	void SetArrOfStructs1_OnRPCPayload(const worker::CommandRequestOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Setarrofstructs1>& Op);
 	void SetArrOfStructs2_OnRPCPayload(const worker::CommandRequestOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Setarrofstructs2>& Op);
 	void RPCStructInput_OnRPCPayload(const worker::CommandRequestOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Rpcstructinput>& Op);
+	void UpdateNestedStructCpp_OnRPCPayload(const worker::CommandRequestOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Updatenestedstructcpp>& Op);
+	void UpdateNestedStructBP_OnRPCPayload(const worker::CommandRequestOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Updatenestedstructbp>& Op);
 	void TestRPC_OnRPCPayload(const worker::CommandRequestOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Testrpc>& Op);
 	void ServerMoveOld_OnRPCPayload(const worker::CommandRequestOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Servermoveold>& Op);
 	void ServerMoveNoBase_OnRPCPayload(const worker::CommandRequestOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Servermovenobase>& Op);
@@ -121,6 +125,8 @@ private:
 	void SetArrOfStructs1_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Setarrofstructs1>& Op);
 	void SetArrOfStructs2_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Setarrofstructs2>& Op);
 	void RPCStructInput_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Rpcstructinput>& Op);
+	void UpdateNestedStructCpp_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Updatenestedstructcpp>& Op);
+	void UpdateNestedStructBP_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Updatenestedstructbp>& Op);
 	void TestRPC_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Testrpc>& Op);
 	void ServerMoveOld_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Servermoveold>& Op);
 	void ServerMoveNoBase_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Servermovenobase>& Op);
@@ -128,4 +134,31 @@ private:
 	void ServerMoveDualHybridRootMotion_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Servermovedualhybridrootmotion>& Op);
 	void ServerMoveDual_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Servermovedual>& Op);
 	void ServerMove_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Servermove>& Op);
+
+	struct FMyStruct__pf3826073315
+	{
+		bool StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1;
+		FVector StructVec_4_734F338F470A88C85C79289BBB7E8467;
+	};
+
+	struct FMyStructWithArray__pf3826073315
+	{
+		TArray<bool> MyBoolArrayNested_7_87D2B213446573EC06159DB37E89CD99;
+		TArray<FMyStruct__pf3826073315> MyStructArrayNested_6_3B3D5A594BF31A5D239E52AF9AD0D3D7;
+	};
+
+	struct FMyStructLv2__pf3826073315
+	{
+		FMyStructWithArray__pf3826073315 lv1ins_2_EFC0167049B51FFB215E2284C0988E4B;
+		TArray<FMyStructWithArray__pf3826073315> lv1arr_5_6E29525C4699B03778E671BA749C6EA7;
+		FMyStruct__pf3826073315 lv0ins_9_A4B4EC294F2B5A8EE604A78342AEC4FD;
+	};
+
+	struct FMyStructlv3__pf3826073315
+	{
+		FMyStructLv2__pf3826073315 lv2ins_3_BC6BEB9D4C9AFC99D6925F881E8DEB21;
+		TArray<FMyStructLv2__pf3826073315> lv2arr_6_7A77E9954D2D0A825445FCAE349DE705;
+		TArray<FMyStructWithArray__pf3826073315> lv1arr_9_1EE4DD494C52603042686DBB43795940;
+		TArray<FVector> vectorarr_13_9869B6EB4C946B8A5B8B32931EDB2413;
+	};
 };

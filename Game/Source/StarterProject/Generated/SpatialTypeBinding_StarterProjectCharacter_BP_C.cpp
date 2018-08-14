@@ -56,6 +56,8 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::Init(USpatialInterop* InI
 	RPCToSenderMap.Emplace("SetArrOfStructs1", &USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs1_SendRPC);
 	RPCToSenderMap.Emplace("SetArrOfStructs2", &USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs2_SendRPC);
 	RPCToSenderMap.Emplace("RPCStructInput", &USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_SendRPC);
+	RPCToSenderMap.Emplace("UpdateNestedStructCpp", &USpatialTypeBinding_StarterProjectCharacter_BP_C::UpdateNestedStructCpp_SendRPC);
+	RPCToSenderMap.Emplace("Update Nested Struct BP", &USpatialTypeBinding_StarterProjectCharacter_BP_C::UpdateNestedStructBP_SendRPC);
 	RPCToSenderMap.Emplace("TestRPC", &USpatialTypeBinding_StarterProjectCharacter_BP_C::TestRPC_SendRPC);
 	RPCToSenderMap.Emplace("ServerMoveOld", &USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMoveOld_SendRPC);
 	RPCToSenderMap.Emplace("ServerMoveNoBase", &USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMoveNoBase_SendRPC);
@@ -111,11 +113,35 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::Init(USpatialInterop* InI
 	RepHandleToPropertyMap.Add(41, FRepHandleData(Class, {"RepRootMotion", "AuthoritativeRootMotion"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
 	RepHandleToPropertyMap.Add(42, FRepHandleData(Class, {"RepRootMotion", "Acceleration"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
 	RepHandleToPropertyMap.Add(43, FRepHandleData(Class, {"RepRootMotion", "LinearVelocity"}, {0, 0}, COND_SimulatedOnlyNoReplay, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(44, FRepHandleData(Class, {"MyBool"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(45, FRepHandleData(Class, {"MyArrofBools"}, {0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(46, FRepHandleData(Class, {"MyStructVar", "StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(47, FRepHandleData(Class, {"MyStructVar", "StructVec_4_734F338F470A88C85C79289BBB7E8467"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
-	RepHandleToPropertyMap.Add(48, FRepHandleData(Class, {"MyArrofStructs"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(44, FRepHandleData(Class, {"MyCppStructIns", "b"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(45, FRepHandleData(Class, {"MyCppStructIns", "V"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(46, FRepHandleData(Class, {"MyNestedStructIns", "StructArr"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(47, FRepHandleData(Class, {"MyNestedStructIns", "BoolArr"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(48, FRepHandleData(Class, {"MyCppStructArr"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(49, FRepHandleData(Class, {"MyNestedStructArr"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(50, FRepHandleData(Class, {"MyBool"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(51, FRepHandleData(Class, {"MyArrofBools"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(52, FRepHandleData(Class, {"MyStructVar", "StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(53, FRepHandleData(Class, {"MyStructVar", "StructVec_4_734F338F470A88C85C79289BBB7E8467"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(54, FRepHandleData(Class, {"MyArrofStructs"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(55, FRepHandleData(Class, {"MyStructNested", "MyBoolArrayNested_7_87D2B213446573EC06159DB37E89CD99"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(56, FRepHandleData(Class, {"MyStructNested", "MyStructArrayNested_6_3B3D5A594BF31A5D239E52AF9AD0D3D7"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(57, FRepHandleData(Class, {"my struct nested arr"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(58, FRepHandleData(Class, {"MyStructLv2Ins", "lv1ins_2_EFC0167049B51FFB215E2284C0988E4B", "MyBoolArrayNested_7_87D2B213446573EC06159DB37E89CD99"}, {0, 0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(59, FRepHandleData(Class, {"MyStructLv2Ins", "lv1ins_2_EFC0167049B51FFB215E2284C0988E4B", "MyStructArrayNested_6_3B3D5A594BF31A5D239E52AF9AD0D3D7"}, {0, 0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(60, FRepHandleData(Class, {"MyStructLv2Ins", "lv1arr_5_6E29525C4699B03778E671BA749C6EA7"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(61, FRepHandleData(Class, {"MyStructLv2Ins", "lv0ins_9_A4B4EC294F2B5A8EE604A78342AEC4FD", "StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1"}, {0, 0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(62, FRepHandleData(Class, {"MyStructLv2Ins", "lv0ins_9_A4B4EC294F2B5A8EE604A78342AEC4FD", "StructVec_4_734F338F470A88C85C79289BBB7E8467"}, {0, 0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(63, FRepHandleData(Class, {"MyStructlv2arr"}, {0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(64, FRepHandleData(Class, {"MyStructlv3ins", "lv2ins_3_BC6BEB9D4C9AFC99D6925F881E8DEB21", "lv1ins_2_EFC0167049B51FFB215E2284C0988E4B", "MyBoolArrayNested_7_87D2B213446573EC06159DB37E89CD99"}, {0, 0, 0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(65, FRepHandleData(Class, {"MyStructlv3ins", "lv2ins_3_BC6BEB9D4C9AFC99D6925F881E8DEB21", "lv1ins_2_EFC0167049B51FFB215E2284C0988E4B", "MyStructArrayNested_6_3B3D5A594BF31A5D239E52AF9AD0D3D7"}, {0, 0, 0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(66, FRepHandleData(Class, {"MyStructlv3ins", "lv2ins_3_BC6BEB9D4C9AFC99D6925F881E8DEB21", "lv1arr_5_6E29525C4699B03778E671BA749C6EA7"}, {0, 0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(67, FRepHandleData(Class, {"MyStructlv3ins", "lv2ins_3_BC6BEB9D4C9AFC99D6925F881E8DEB21", "lv0ins_9_A4B4EC294F2B5A8EE604A78342AEC4FD", "StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1"}, {0, 0, 0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(68, FRepHandleData(Class, {"MyStructlv3ins", "lv2ins_3_BC6BEB9D4C9AFC99D6925F881E8DEB21", "lv0ins_9_A4B4EC294F2B5A8EE604A78342AEC4FD", "StructVec_4_734F338F470A88C85C79289BBB7E8467"}, {0, 0, 0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(69, FRepHandleData(Class, {"MyStructlv3ins", "lv2arr_6_7A77E9954D2D0A825445FCAE349DE705"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(70, FRepHandleData(Class, {"MyStructlv3ins", "lv1arr_9_1EE4DD494C52603042686DBB43795940"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(71, FRepHandleData(Class, {"MyStructlv3ins", "vectorarr_13_9869B6EB4C946B8A5B8B32931EDB2413"}, {0, 0}, COND_None, REPNOTIFY_OnChanged));
+	RepHandleToPropertyMap.Add(72, FRepHandleData(Class, {"MyStructlv3arr"}, {0}, COND_None, REPNOTIFY_OnChanged));
 
 	// Populate HandoverHandleToPropertyMap.
 	HandoverHandleToPropertyMap.Add(1, FHandoverHandleData(Class, {"CharacterMovement", "MovementMode"}));
@@ -209,6 +235,8 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::BindToView(bool bIsClient
 	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Setarrofstructs1>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs1_OnRPCPayload, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Setarrofstructs2>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs2_OnRPCPayload, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Rpcstructinput>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_OnRPCPayload, this, std::placeholders::_1)));
+	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Updatenestedstructcpp>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::UpdateNestedStructCpp_OnRPCPayload, this, std::placeholders::_1)));
+	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Updatenestedstructbp>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::UpdateNestedStructBP_OnRPCPayload, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Testrpc>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::TestRPC_OnRPCPayload, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Servermoveold>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMoveOld_OnRPCPayload, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandRequest<ServerRPCCommandTypes::Servermovenobase>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMoveNoBase_OnRPCPayload, this, std::placeholders::_1)));
@@ -219,6 +247,8 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::BindToView(bool bIsClient
 	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Setarrofstructs1>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs1_OnCommandResponse, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Setarrofstructs2>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs2_OnCommandResponse, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Rpcstructinput>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_OnCommandResponse, this, std::placeholders::_1)));
+	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Updatenestedstructcpp>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::UpdateNestedStructCpp_OnCommandResponse, this, std::placeholders::_1)));
+	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Updatenestedstructbp>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::UpdateNestedStructBP_OnCommandResponse, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Testrpc>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::TestRPC_OnCommandResponse, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Servermoveold>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMoveOld_OnCommandResponse, this, std::placeholders::_1)));
 	ViewCallbacks.Add(View->OnCommandResponse<ServerRPCCommandTypes::Servermovenobase>(std::bind(&USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerMoveNoBase_OnCommandResponse, this, std::placeholders::_1)));
@@ -1156,14 +1186,130 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerSendUpdate_MultiCli
 			}
 			break;
 		}
-		case 44: // field_mybool0
+		case 44: // field_mycppstructins0_b0
+		{
+			bool Value = static_cast<UBoolProperty*>(Property)->GetPropertyValue(Data);
+
+			OutUpdate.set_field_mycppstructins0_b0(Value);
+			break;
+		}
+		case 45: // field_mycppstructins0_v0
+		{
+			const FVector& Value = *(reinterpret_cast<FVector const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 45);
+			TSet<const UObject*> UnresolvedObjects;
+			TArray<uint8> ValueData;
+			FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+			bool bSuccess = true;
+			(const_cast<FVector&>(Value)).NetSerialize(ValueDataWriter, PackageMap, bSuccess);
+			checkf(bSuccess, TEXT("NetSerialize on FVector failed."));
+			const std::string& Result = (std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mycppstructins0_v0(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 45);
+			}
+			break;
+		}
+		case 46: // field_mynestedstructins0_structarr0
+		{
+			const TArray<FMyCppStruct>& Value = *(reinterpret_cast<TArray<FMyCppStruct> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 46);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyCppStruct::StaticStruct()->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyCppStruct*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mynestedstructins0_structarr0(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 46);
+			}
+			break;
+		}
+		case 47: // field_mynestedstructins0_boolarr0
+		{
+			const TArray<bool>& Value = *(reinterpret_cast<TArray<bool> const*>(Data));
+
+			::worker::List<bool> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				List.emplace_back(Value[i]);
+			}
+			OutUpdate.set_field_mynestedstructins0_boolarr0(List);
+			break;
+		}
+		case 48: // field_mycppstructarr0
+		{
+			const TArray<FMyCppStruct>& Value = *(reinterpret_cast<TArray<FMyCppStruct> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 48);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyCppStruct::StaticStruct()->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyCppStruct*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mycppstructarr0(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 48);
+			}
+			break;
+		}
+		case 49: // field_mynestedstructarr0
+		{
+			const TArray<FMyCppNestedStruct>& Value = *(reinterpret_cast<TArray<FMyCppNestedStruct> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 49);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyCppNestedStruct::StaticStruct()->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyCppNestedStruct*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mynestedstructarr0(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 49);
+			}
+			break;
+		}
+		case 50: // field_mybool0
 		{
 			bool Value = static_cast<UBoolProperty*>(Property)->GetPropertyValue(Data);
 
 			OutUpdate.set_field_mybool0(Value);
 			break;
 		}
-		case 45: // field_myarrofbools0
+		case 51: // field_myarrofbools0
 		{
 			const TArray<bool>& Value = *(reinterpret_cast<TArray<bool> const*>(Data));
 
@@ -1175,18 +1321,18 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerSendUpdate_MultiCli
 			OutUpdate.set_field_myarrofbools0(List);
 			break;
 		}
-		case 46: // field_mystructvar0_structbool176b6bada4ba8fea4761b938495dea0e10
+		case 52: // field_mystructvar0_structbool176b6bada4ba8fea4761b938495dea0e10
 		{
 			bool Value = static_cast<UBoolProperty*>(Property)->GetPropertyValue(Data);
 
 			OutUpdate.set_field_mystructvar0_structbool176b6bada4ba8fea4761b938495dea0e10(Value);
 			break;
 		}
-		case 47: // field_mystructvar0_structvec4734f338f470a88c85c79289bbb7e84670
+		case 53: // field_mystructvar0_structvec4734f338f470a88c85c79289bbb7e84670
 		{
 			const FVector& Value = *(reinterpret_cast<FVector const*>(Data));
 
-			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 47);
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 53);
 			TSet<const UObject*> UnresolvedObjects;
 			TArray<uint8> ValueData;
 			FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
@@ -1200,17 +1346,16 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerSendUpdate_MultiCli
 			}
 			else
 			{
-				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 47);
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 53);
 			}
 			break;
 		}
-		case 48: // field_myarrofstructs0
+		case 54: // field_myarrofstructs0
 		{
-			struct FMyStruct__pf3826073315 {uint8 Data[16];};
 			UStruct* FMyStruct__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStruct.MyStruct"), NULL, LOAD_None, NULL);
 			const TArray<FMyStruct__pf3826073315>& Value = *(reinterpret_cast<TArray<FMyStruct__pf3826073315> const*>(Data));
 
-			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 48);
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 54);
 			TSet<const UObject*> UnresolvedObjects;
 			::worker::List<std::string> List;
 			for(int i = 0; i < Value.Num(); i++)
@@ -1227,7 +1372,388 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ServerSendUpdate_MultiCli
 			}
 			else
 			{
-				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 48);
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 54);
+			}
+			break;
+		}
+		case 55: // field_mystructnested0_myboolarraynested787d2b213446573ec06159db37e89cd990
+		{
+			const TArray<bool>& Value = *(reinterpret_cast<TArray<bool> const*>(Data));
+
+			::worker::List<bool> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				List.emplace_back(Value[i]);
+			}
+			OutUpdate.set_field_mystructnested0_myboolarraynested787d2b213446573ec06159db37e89cd990(List);
+			break;
+		}
+		case 56: // field_mystructnested0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70
+		{
+			UStruct* FMyStruct__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStruct.MyStruct"), NULL, LOAD_None, NULL);
+			const TArray<FMyStruct__pf3826073315>& Value = *(reinterpret_cast<TArray<FMyStruct__pf3826073315> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 56);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyStruct__pf3826073315_Struct->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyStruct__pf3826073315*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructnested0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 56);
+			}
+			break;
+		}
+		case 57: // field_mystructnestedarr0
+		{
+			UStruct* FMyStructWithArray__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/myStructWithArray.MyStructWithArray"), NULL, LOAD_None, NULL);
+			const TArray<FMyStructWithArray__pf3826073315>& Value = *(reinterpret_cast<TArray<FMyStructWithArray__pf3826073315> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 57);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyStructWithArray__pf3826073315_Struct->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyStructWithArray__pf3826073315*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructnestedarr0(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 57);
+			}
+			break;
+		}
+		case 58: // field_mystructlv2ins0_lv1ins2efc0167049b51ffb215e2284c0988e4b0_myboolarraynested787d2b213446573ec06159db37e89cd990
+		{
+			const TArray<bool>& Value = *(reinterpret_cast<TArray<bool> const*>(Data));
+
+			::worker::List<bool> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				List.emplace_back(Value[i]);
+			}
+			OutUpdate.set_field_mystructlv2ins0_lv1ins2efc0167049b51ffb215e2284c0988e4b0_myboolarraynested787d2b213446573ec06159db37e89cd990(List);
+			break;
+		}
+		case 59: // field_mystructlv2ins0_lv1ins2efc0167049b51ffb215e2284c0988e4b0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70
+		{
+			UStruct* FMyStruct__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStruct.MyStruct"), NULL, LOAD_None, NULL);
+			const TArray<FMyStruct__pf3826073315>& Value = *(reinterpret_cast<TArray<FMyStruct__pf3826073315> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 59);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyStruct__pf3826073315_Struct->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyStruct__pf3826073315*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructlv2ins0_lv1ins2efc0167049b51ffb215e2284c0988e4b0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 59);
+			}
+			break;
+		}
+		case 60: // field_mystructlv2ins0_lv1arr56e29525c4699b03778e671ba749c6ea70
+		{
+			UStruct* FMyStructWithArray__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/myStructWithArray.MyStructWithArray"), NULL, LOAD_None, NULL);
+			const TArray<FMyStructWithArray__pf3826073315>& Value = *(reinterpret_cast<TArray<FMyStructWithArray__pf3826073315> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 60);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyStructWithArray__pf3826073315_Struct->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyStructWithArray__pf3826073315*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructlv2ins0_lv1arr56e29525c4699b03778e671ba749c6ea70(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 60);
+			}
+			break;
+		}
+		case 61: // field_mystructlv2ins0_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structbool176b6bada4ba8fea4761b938495dea0e10
+		{
+			bool Value = static_cast<UBoolProperty*>(Property)->GetPropertyValue(Data);
+
+			OutUpdate.set_field_mystructlv2ins0_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structbool176b6bada4ba8fea4761b938495dea0e10(Value);
+			break;
+		}
+		case 62: // field_mystructlv2ins0_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structvec4734f338f470a88c85c79289bbb7e84670
+		{
+			const FVector& Value = *(reinterpret_cast<FVector const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 62);
+			TSet<const UObject*> UnresolvedObjects;
+			TArray<uint8> ValueData;
+			FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+			bool bSuccess = true;
+			(const_cast<FVector&>(Value)).NetSerialize(ValueDataWriter, PackageMap, bSuccess);
+			checkf(bSuccess, TEXT("NetSerialize on FVector failed."));
+			const std::string& Result = (std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructlv2ins0_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structvec4734f338f470a88c85c79289bbb7e84670(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 62);
+			}
+			break;
+		}
+		case 63: // field_mystructlv2arr0
+		{
+			UStruct* FMyStructLv2__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStructLv2.MyStructLv2"), NULL, LOAD_None, NULL);
+			const TArray<FMyStructLv2__pf3826073315>& Value = *(reinterpret_cast<TArray<FMyStructLv2__pf3826073315> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 63);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyStructLv2__pf3826073315_Struct->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyStructLv2__pf3826073315*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructlv2arr0(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 63);
+			}
+			break;
+		}
+		case 64: // field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1ins2efc0167049b51ffb215e2284c0988e4b0_myboolarraynested787d2b213446573ec06159db37e89cd990
+		{
+			const TArray<bool>& Value = *(reinterpret_cast<TArray<bool> const*>(Data));
+
+			::worker::List<bool> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				List.emplace_back(Value[i]);
+			}
+			OutUpdate.set_field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1ins2efc0167049b51ffb215e2284c0988e4b0_myboolarraynested787d2b213446573ec06159db37e89cd990(List);
+			break;
+		}
+		case 65: // field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1ins2efc0167049b51ffb215e2284c0988e4b0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70
+		{
+			UStruct* FMyStruct__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStruct.MyStruct"), NULL, LOAD_None, NULL);
+			const TArray<FMyStruct__pf3826073315>& Value = *(reinterpret_cast<TArray<FMyStruct__pf3826073315> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 65);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyStruct__pf3826073315_Struct->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyStruct__pf3826073315*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1ins2efc0167049b51ffb215e2284c0988e4b0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 65);
+			}
+			break;
+		}
+		case 66: // field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1arr56e29525c4699b03778e671ba749c6ea70
+		{
+			UStruct* FMyStructWithArray__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/myStructWithArray.MyStructWithArray"), NULL, LOAD_None, NULL);
+			const TArray<FMyStructWithArray__pf3826073315>& Value = *(reinterpret_cast<TArray<FMyStructWithArray__pf3826073315> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 66);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyStructWithArray__pf3826073315_Struct->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyStructWithArray__pf3826073315*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1arr56e29525c4699b03778e671ba749c6ea70(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 66);
+			}
+			break;
+		}
+		case 67: // field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structbool176b6bada4ba8fea4761b938495dea0e10
+		{
+			bool Value = static_cast<UBoolProperty*>(Property)->GetPropertyValue(Data);
+
+			OutUpdate.set_field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structbool176b6bada4ba8fea4761b938495dea0e10(Value);
+			break;
+		}
+		case 68: // field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structvec4734f338f470a88c85c79289bbb7e84670
+		{
+			const FVector& Value = *(reinterpret_cast<FVector const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 68);
+			TSet<const UObject*> UnresolvedObjects;
+			TArray<uint8> ValueData;
+			FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+			bool bSuccess = true;
+			(const_cast<FVector&>(Value)).NetSerialize(ValueDataWriter, PackageMap, bSuccess);
+			checkf(bSuccess, TEXT("NetSerialize on FVector failed."));
+			const std::string& Result = (std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structvec4734f338f470a88c85c79289bbb7e84670(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 68);
+			}
+			break;
+		}
+		case 69: // field_mystructlv3ins0_lv2arr67a77e9954d2d0a825445fcae349de7050
+		{
+			UStruct* FMyStructLv2__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStructLv2.MyStructLv2"), NULL, LOAD_None, NULL);
+			const TArray<FMyStructLv2__pf3826073315>& Value = *(reinterpret_cast<TArray<FMyStructLv2__pf3826073315> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 69);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyStructLv2__pf3826073315_Struct->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyStructLv2__pf3826073315*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructlv3ins0_lv2arr67a77e9954d2d0a825445fcae349de7050(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 69);
+			}
+			break;
+		}
+		case 70: // field_mystructlv3ins0_lv1arr91ee4dd494c52603042686dbb437959400
+		{
+			UStruct* FMyStructWithArray__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/myStructWithArray.MyStructWithArray"), NULL, LOAD_None, NULL);
+			const TArray<FMyStructWithArray__pf3826073315>& Value = *(reinterpret_cast<TArray<FMyStructWithArray__pf3826073315> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 70);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyStructWithArray__pf3826073315_Struct->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyStructWithArray__pf3826073315*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructlv3ins0_lv1arr91ee4dd494c52603042686dbb437959400(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 70);
+			}
+			break;
+		}
+		case 71: // field_mystructlv3ins0_vectorarr139869b6eb4c946b8a5b8b32931edb24130
+		{
+			const TArray<FVector>& Value = *(reinterpret_cast<TArray<FVector> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 71);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				bool bSuccess = true;
+				(const_cast<FVector&>(Value[i])).NetSerialize(ValueDataWriter, PackageMap, bSuccess);
+				checkf(bSuccess, TEXT("NetSerialize on FVector failed."));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructlv3ins0_vectorarr139869b6eb4c946b8a5b8b32931edb24130(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 71);
+			}
+			break;
+		}
+		case 72: // field_mystructlv3arr0
+		{
+			UStruct* FMyStructlv3__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStructlv3.MyStructlv3"), NULL, LOAD_None, NULL);
+			const TArray<FMyStructlv3__pf3826073315>& Value = *(reinterpret_cast<TArray<FMyStructlv3__pf3826073315> const*>(Data));
+
+			Interop->ResetOutgoingArrayRepUpdate_Internal(Channel, 72);
+			TSet<const UObject*> UnresolvedObjects;
+			::worker::List<std::string> List;
+			for(int i = 0; i < Value.Num(); i++)
+			{
+				TArray<uint8> ValueData;
+				FSpatialMemoryWriter ValueDataWriter(ValueData, PackageMap, UnresolvedObjects);
+				FMyStructlv3__pf3826073315_Struct->SerializeBin(ValueDataWriter, reinterpret_cast<void*>(const_cast<FMyStructlv3__pf3826073315*>(&Value[i])));
+				List.emplace_back(std::string(reinterpret_cast<char*>(ValueData.GetData()), ValueData.Num()));
+			}
+			const ::worker::List<std::string>& Result = (List);
+			if (UnresolvedObjects.Num() == 0)
+			{
+				OutUpdate.set_field_mystructlv3arr0(Result);
+			}
+			else
+			{
+				Interop->QueueOutgoingArrayRepUpdate_Internal(UnresolvedObjects, Channel, 72);
 			}
 			break;
 		}
@@ -2626,10 +3152,180 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ReceiveUpdate_MultiClient
 				Handle);
 		}
 	}
+	if (!Update.field_mycppstructins0_b0().empty())
+	{
+		// field_mycppstructins0_b0
+		uint16 Handle = 44;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			bool Value = static_cast<UBoolProperty*>(RepData->Property)->GetPropertyValue(PropertyData);
+
+			Value = (*Update.field_mycppstructins0_b0().data());
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mycppstructins0_v0().empty())
+	{
+		// field_mycppstructins0_v0
+		uint16 Handle = 45;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			FVector Value = *(reinterpret_cast<FVector const*>(PropertyData));
+
+			auto& ValueDataStr = (*Update.field_mycppstructins0_v0().data());
+			TArray<uint8> ValueData;
+			ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+			FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+			bool bSuccess = true;
+			Value.NetSerialize(ValueDataReader, PackageMap, bSuccess);
+			checkf(bSuccess, TEXT("NetSerialize on FVector failed."));
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mynestedstructins0_structarr0().empty())
+	{
+		// field_mynestedstructins0_structarr0
+		uint16 Handle = 46;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			TArray<FMyCppStruct> Value = *(reinterpret_cast<TArray<FMyCppStruct> *>(PropertyData));
+
+			auto& List = (*Update.field_mynestedstructins0_structarr0().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyCppStruct::StaticStruct()->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mynestedstructins0_boolarr0().empty())
+	{
+		// field_mynestedstructins0_boolarr0
+		uint16 Handle = 47;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			TArray<bool> Value = *(reinterpret_cast<TArray<bool> *>(PropertyData));
+
+			auto& List = (*Update.field_mynestedstructins0_boolarr0().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				Value[i] = List[i];
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mycppstructarr0().empty())
+	{
+		// field_mycppstructarr0
+		uint16 Handle = 48;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			TArray<FMyCppStruct> Value = *(reinterpret_cast<TArray<FMyCppStruct> *>(PropertyData));
+
+			auto& List = (*Update.field_mycppstructarr0().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyCppStruct::StaticStruct()->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mynestedstructarr0().empty())
+	{
+		// field_mynestedstructarr0
+		uint16 Handle = 49;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			TArray<FMyCppNestedStruct> Value = *(reinterpret_cast<TArray<FMyCppNestedStruct> *>(PropertyData));
+
+			auto& List = (*Update.field_mynestedstructarr0().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyCppNestedStruct::StaticStruct()->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
 	if (!Update.field_mybool0().empty())
 	{
 		// field_mybool0
-		uint16 Handle = 44;
+		uint16 Handle = 50;
 		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
 		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
 		{
@@ -2651,7 +3347,7 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ReceiveUpdate_MultiClient
 	if (!Update.field_myarrofbools0().empty())
 	{
 		// field_myarrofbools0
-		uint16 Handle = 45;
+		uint16 Handle = 51;
 		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
 		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
 		{
@@ -2678,7 +3374,7 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ReceiveUpdate_MultiClient
 	if (!Update.field_mystructvar0_structbool176b6bada4ba8fea4761b938495dea0e10().empty())
 	{
 		// field_mystructvar0_structbool176b6bada4ba8fea4761b938495dea0e10
-		uint16 Handle = 46;
+		uint16 Handle = 52;
 		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
 		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
 		{
@@ -2700,7 +3396,7 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ReceiveUpdate_MultiClient
 	if (!Update.field_mystructvar0_structvec4734f338f470a88c85c79289bbb7e84670().empty())
 	{
 		// field_mystructvar0_structvec4734f338f470a88c85c79289bbb7e84670
-		uint16 Handle = 47;
+		uint16 Handle = 53;
 		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
 		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
 		{
@@ -2728,12 +3424,11 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ReceiveUpdate_MultiClient
 	if (!Update.field_myarrofstructs0().empty())
 	{
 		// field_myarrofstructs0
-		uint16 Handle = 48;
+		uint16 Handle = 54;
 		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
 		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
 		{
 			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
-			struct FMyStruct__pf3826073315 {uint8 Data[16];};
 			UStruct* FMyStruct__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStruct.MyStruct"), NULL, LOAD_None, NULL);
 			TArray<FMyStruct__pf3826073315> Value = *(reinterpret_cast<TArray<FMyStruct__pf3826073315> *>(PropertyData));
 
@@ -2746,6 +3441,540 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::ReceiveUpdate_MultiClient
 				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
 				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
 				FMyStruct__pf3826073315_Struct->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructnested0_myboolarraynested787d2b213446573ec06159db37e89cd990().empty())
+	{
+		// field_mystructnested0_myboolarraynested787d2b213446573ec06159db37e89cd990
+		uint16 Handle = 55;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			TArray<bool> Value = *(reinterpret_cast<TArray<bool> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructnested0_myboolarraynested787d2b213446573ec06159db37e89cd990().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				Value[i] = List[i];
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructnested0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70().empty())
+	{
+		// field_mystructnested0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70
+		uint16 Handle = 56;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			UStruct* FMyStruct__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStruct.MyStruct"), NULL, LOAD_None, NULL);
+			TArray<FMyStruct__pf3826073315> Value = *(reinterpret_cast<TArray<FMyStruct__pf3826073315> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructnested0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyStruct__pf3826073315_Struct->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructnestedarr0().empty())
+	{
+		// field_mystructnestedarr0
+		uint16 Handle = 57;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			UStruct* FMyStructWithArray__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/myStructWithArray.MyStructWithArray"), NULL, LOAD_None, NULL);
+			TArray<FMyStructWithArray__pf3826073315> Value = *(reinterpret_cast<TArray<FMyStructWithArray__pf3826073315> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructnestedarr0().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyStructWithArray__pf3826073315_Struct->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv2ins0_lv1ins2efc0167049b51ffb215e2284c0988e4b0_myboolarraynested787d2b213446573ec06159db37e89cd990().empty())
+	{
+		// field_mystructlv2ins0_lv1ins2efc0167049b51ffb215e2284c0988e4b0_myboolarraynested787d2b213446573ec06159db37e89cd990
+		uint16 Handle = 58;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			TArray<bool> Value = *(reinterpret_cast<TArray<bool> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructlv2ins0_lv1ins2efc0167049b51ffb215e2284c0988e4b0_myboolarraynested787d2b213446573ec06159db37e89cd990().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				Value[i] = List[i];
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv2ins0_lv1ins2efc0167049b51ffb215e2284c0988e4b0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70().empty())
+	{
+		// field_mystructlv2ins0_lv1ins2efc0167049b51ffb215e2284c0988e4b0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70
+		uint16 Handle = 59;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			UStruct* FMyStruct__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStruct.MyStruct"), NULL, LOAD_None, NULL);
+			TArray<FMyStruct__pf3826073315> Value = *(reinterpret_cast<TArray<FMyStruct__pf3826073315> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructlv2ins0_lv1ins2efc0167049b51ffb215e2284c0988e4b0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyStruct__pf3826073315_Struct->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv2ins0_lv1arr56e29525c4699b03778e671ba749c6ea70().empty())
+	{
+		// field_mystructlv2ins0_lv1arr56e29525c4699b03778e671ba749c6ea70
+		uint16 Handle = 60;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			UStruct* FMyStructWithArray__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/myStructWithArray.MyStructWithArray"), NULL, LOAD_None, NULL);
+			TArray<FMyStructWithArray__pf3826073315> Value = *(reinterpret_cast<TArray<FMyStructWithArray__pf3826073315> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructlv2ins0_lv1arr56e29525c4699b03778e671ba749c6ea70().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyStructWithArray__pf3826073315_Struct->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv2ins0_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structbool176b6bada4ba8fea4761b938495dea0e10().empty())
+	{
+		// field_mystructlv2ins0_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structbool176b6bada4ba8fea4761b938495dea0e10
+		uint16 Handle = 61;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			bool Value = static_cast<UBoolProperty*>(RepData->Property)->GetPropertyValue(PropertyData);
+
+			Value = (*Update.field_mystructlv2ins0_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structbool176b6bada4ba8fea4761b938495dea0e10().data());
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv2ins0_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structvec4734f338f470a88c85c79289bbb7e84670().empty())
+	{
+		// field_mystructlv2ins0_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structvec4734f338f470a88c85c79289bbb7e84670
+		uint16 Handle = 62;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			FVector Value = *(reinterpret_cast<FVector const*>(PropertyData));
+
+			auto& ValueDataStr = (*Update.field_mystructlv2ins0_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structvec4734f338f470a88c85c79289bbb7e84670().data());
+			TArray<uint8> ValueData;
+			ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+			FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+			bool bSuccess = true;
+			Value.NetSerialize(ValueDataReader, PackageMap, bSuccess);
+			checkf(bSuccess, TEXT("NetSerialize on FVector failed."));
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv2arr0().empty())
+	{
+		// field_mystructlv2arr0
+		uint16 Handle = 63;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			UStruct* FMyStructLv2__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStructLv2.MyStructLv2"), NULL, LOAD_None, NULL);
+			TArray<FMyStructLv2__pf3826073315> Value = *(reinterpret_cast<TArray<FMyStructLv2__pf3826073315> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructlv2arr0().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyStructLv2__pf3826073315_Struct->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1ins2efc0167049b51ffb215e2284c0988e4b0_myboolarraynested787d2b213446573ec06159db37e89cd990().empty())
+	{
+		// field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1ins2efc0167049b51ffb215e2284c0988e4b0_myboolarraynested787d2b213446573ec06159db37e89cd990
+		uint16 Handle = 64;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			TArray<bool> Value = *(reinterpret_cast<TArray<bool> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1ins2efc0167049b51ffb215e2284c0988e4b0_myboolarraynested787d2b213446573ec06159db37e89cd990().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				Value[i] = List[i];
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1ins2efc0167049b51ffb215e2284c0988e4b0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70().empty())
+	{
+		// field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1ins2efc0167049b51ffb215e2284c0988e4b0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70
+		uint16 Handle = 65;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			UStruct* FMyStruct__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStruct.MyStruct"), NULL, LOAD_None, NULL);
+			TArray<FMyStruct__pf3826073315> Value = *(reinterpret_cast<TArray<FMyStruct__pf3826073315> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1ins2efc0167049b51ffb215e2284c0988e4b0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyStruct__pf3826073315_Struct->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1arr56e29525c4699b03778e671ba749c6ea70().empty())
+	{
+		// field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1arr56e29525c4699b03778e671ba749c6ea70
+		uint16 Handle = 66;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			UStruct* FMyStructWithArray__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/myStructWithArray.MyStructWithArray"), NULL, LOAD_None, NULL);
+			TArray<FMyStructWithArray__pf3826073315> Value = *(reinterpret_cast<TArray<FMyStructWithArray__pf3826073315> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1arr56e29525c4699b03778e671ba749c6ea70().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyStructWithArray__pf3826073315_Struct->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structbool176b6bada4ba8fea4761b938495dea0e10().empty())
+	{
+		// field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structbool176b6bada4ba8fea4761b938495dea0e10
+		uint16 Handle = 67;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			bool Value = static_cast<UBoolProperty*>(RepData->Property)->GetPropertyValue(PropertyData);
+
+			Value = (*Update.field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structbool176b6bada4ba8fea4761b938495dea0e10().data());
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structvec4734f338f470a88c85c79289bbb7e84670().empty())
+	{
+		// field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structvec4734f338f470a88c85c79289bbb7e84670
+		uint16 Handle = 68;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			FVector Value = *(reinterpret_cast<FVector const*>(PropertyData));
+
+			auto& ValueDataStr = (*Update.field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structvec4734f338f470a88c85c79289bbb7e84670().data());
+			TArray<uint8> ValueData;
+			ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+			FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+			bool bSuccess = true;
+			Value.NetSerialize(ValueDataReader, PackageMap, bSuccess);
+			checkf(bSuccess, TEXT("NetSerialize on FVector failed."));
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv3ins0_lv2arr67a77e9954d2d0a825445fcae349de7050().empty())
+	{
+		// field_mystructlv3ins0_lv2arr67a77e9954d2d0a825445fcae349de7050
+		uint16 Handle = 69;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			UStruct* FMyStructLv2__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStructLv2.MyStructLv2"), NULL, LOAD_None, NULL);
+			TArray<FMyStructLv2__pf3826073315> Value = *(reinterpret_cast<TArray<FMyStructLv2__pf3826073315> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructlv3ins0_lv2arr67a77e9954d2d0a825445fcae349de7050().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyStructLv2__pf3826073315_Struct->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv3ins0_lv1arr91ee4dd494c52603042686dbb437959400().empty())
+	{
+		// field_mystructlv3ins0_lv1arr91ee4dd494c52603042686dbb437959400
+		uint16 Handle = 70;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			UStruct* FMyStructWithArray__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/myStructWithArray.MyStructWithArray"), NULL, LOAD_None, NULL);
+			TArray<FMyStructWithArray__pf3826073315> Value = *(reinterpret_cast<TArray<FMyStructWithArray__pf3826073315> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructlv3ins0_lv1arr91ee4dd494c52603042686dbb437959400().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyStructWithArray__pf3826073315_Struct->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv3ins0_vectorarr139869b6eb4c946b8a5b8b32931edb24130().empty())
+	{
+		// field_mystructlv3ins0_vectorarr139869b6eb4c946b8a5b8b32931edb24130
+		uint16 Handle = 71;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			TArray<FVector> Value = *(reinterpret_cast<TArray<FVector> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructlv3ins0_vectorarr139869b6eb4c946b8a5b8b32931edb24130().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				bool bSuccess = true;
+				Value[i].NetSerialize(ValueDataReader, PackageMap, bSuccess);
+				checkf(bSuccess, TEXT("NetSerialize on FVector failed."));
+			}
+
+			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
+
+			UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received replicated property update. actor %s (%lld), property %s (handle %d)"),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ActorChannel->Actor->GetName(),
+				ActorChannel->GetEntityId().ToSpatialEntityId(),
+				*RepData->Property->GetName(),
+				Handle);
+		}
+	}
+	if (!Update.field_mystructlv3arr0().empty())
+	{
+		// field_mystructlv3arr0
+		uint16 Handle = 72;
+		const FRepHandleData* RepData = &HandleToPropertyMap[Handle];
+		if (bIsServer || ConditionMap.IsRelevant(RepData->Condition))
+		{
+			uint8* PropertyData = RepData->GetPropertyData(reinterpret_cast<uint8*>(TargetObject));
+			UStruct* FMyStructlv3__pf3826073315_Struct = LoadObject<UStruct>(NULL, TEXT("/Game/ThirdPersonCPP/Blueprints/MyStructlv3.MyStructlv3"), NULL, LOAD_None, NULL);
+			TArray<FMyStructlv3__pf3826073315> Value = *(reinterpret_cast<TArray<FMyStructlv3__pf3826073315> *>(PropertyData));
+
+			auto& List = (*Update.field_mystructlv3arr0().data());
+			Value.SetNum(List.size());
+			for(int i = 0; i < List.size(); i++)
+			{
+				auto& ValueDataStr = List[i];
+				TArray<uint8> ValueData;
+				ValueData.Append(reinterpret_cast<const uint8*>(ValueDataStr.data()), ValueDataStr.size());
+				FSpatialMemoryReader ValueDataReader(ValueData, PackageMap);
+				FMyStructlv3__pf3826073315_Struct->SerializeBin(ValueDataReader, reinterpret_cast<void*>(&Value[i]));
 			}
 
 			ApplyIncomingReplicatedPropertyUpdate(*RepData, TargetObject, static_cast<const void*>(&Value), RepNotifies);
@@ -3437,11 +4666,6 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs2_SendRPC(
 }
 void USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject)
 {
-	struct FMyStruct__pf3826073315
-	{
-		bool StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1;
-		FVector StructVec_4_734F338F470A88C85C79289BBB7E8467;
-	};
 	struct StarterProjectCharacter_BP_C_eventRPCStructInput_Parms
 	{
 		bool BoolIn;
@@ -3486,6 +4710,60 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_SendRPC(wo
 			*ObjectRefToString(TargetObjectRef));
 
 			auto RequestId = Connection->SendCommandRequest<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Rpcstructinput>(TargetObjectRef.entity(), RPCPayload, 0);
+			return {RequestId.Id};
+	};
+	Interop->InvokeRPCSendHandler_Internal(Sender, /*bReliable*/ false);
+}
+void USpatialTypeBinding_StarterProjectCharacter_BP_C::UpdateNestedStructCpp_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject)
+{
+	auto Sender = [this, Connection, TargetObject]() mutable -> FRPCCommandRequestResult
+	{
+		// Resolve TargetObject.
+		improbable::unreal::UnrealObjectRef TargetObjectRef = PackageMap->GetUnrealObjectRefFromNetGUID(PackageMap->GetNetGUIDFromObject(TargetObject));
+		if (TargetObjectRef == SpatialConstants::UNRESOLVED_OBJECT_REF)
+		{
+			UE_LOG(LogSpatialGDKInterop, Log, TEXT("%s: RPC UpdateNestedStructCpp queued. Target object is unresolved."), *Interop->GetSpatialOS()->GetWorkerId());
+			return {TargetObject};
+		}
+
+		// Build RPC Payload.
+		improbable::unreal::generated::starterprojectcharacterbpc::UpdateNestedStructCppRequest RPCPayload;
+
+		// Send RPC
+		RPCPayload.set_target_subobject_offset(TargetObjectRef.offset());
+		UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Sending RPC: UpdateNestedStructCpp, target: %s %s"),
+			*Interop->GetSpatialOS()->GetWorkerId(),
+			*TargetObject->GetName(),
+			*ObjectRefToString(TargetObjectRef));
+
+			auto RequestId = Connection->SendCommandRequest<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Updatenestedstructcpp>(TargetObjectRef.entity(), RPCPayload, 0);
+			return {RequestId.Id};
+	};
+	Interop->InvokeRPCSendHandler_Internal(Sender, /*bReliable*/ false);
+}
+void USpatialTypeBinding_StarterProjectCharacter_BP_C::UpdateNestedStructBP_SendRPC(worker::Connection* const Connection, void* Parameters, UObject* TargetObject)
+{
+	auto Sender = [this, Connection, TargetObject]() mutable -> FRPCCommandRequestResult
+	{
+		// Resolve TargetObject.
+		improbable::unreal::UnrealObjectRef TargetObjectRef = PackageMap->GetUnrealObjectRefFromNetGUID(PackageMap->GetNetGUIDFromObject(TargetObject));
+		if (TargetObjectRef == SpatialConstants::UNRESOLVED_OBJECT_REF)
+		{
+			UE_LOG(LogSpatialGDKInterop, Log, TEXT("%s: RPC Update Nested Struct BP queued. Target object is unresolved."), *Interop->GetSpatialOS()->GetWorkerId());
+			return {TargetObject};
+		}
+
+		// Build RPC Payload.
+		improbable::unreal::generated::starterprojectcharacterbpc::UpdateNestedStructBPRequest RPCPayload;
+
+		// Send RPC
+		RPCPayload.set_target_subobject_offset(TargetObjectRef.offset());
+		UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Sending RPC: Update Nested Struct BP, target: %s %s"),
+			*Interop->GetSpatialOS()->GetWorkerId(),
+			*TargetObject->GetName(),
+			*ObjectRefToString(TargetObjectRef));
+
+			auto RequestId = Connection->SendCommandRequest<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Updatenestedstructbp>(TargetObjectRef.entity(), RPCPayload, 0);
 			return {RequestId.Id};
 	};
 	Interop->InvokeRPCSendHandler_Internal(Sender, /*bReliable*/ false);
@@ -4914,11 +6192,6 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_OnRPCPaylo
 			*TargetNetGUID.ToString());
 
 		// Declare parameters.
-		struct FMyStruct__pf3826073315
-		{
-			bool StructBool_1_76B6BADA4BA8FEA4761B938495DEA0E1;
-			FVector StructVec_4_734F338F470A88C85C79289BBB7E8467;
-		};
 		struct StarterProjectCharacter_BP_C_eventRPCStructInput_Parms
 		{
 			bool BoolIn;
@@ -4964,6 +6237,96 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_OnRPCPaylo
 		// Send command response.
 		TSharedPtr<worker::Connection> Connection = Interop->GetSpatialOS()->GetConnection().Pin();
 		Connection->SendCommandResponse<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Rpcstructinput>(Op.RequestId, {});
+		return {};
+	};
+	Interop->InvokeRPCReceiveHandler_Internal(Receiver);
+}
+void USpatialTypeBinding_StarterProjectCharacter_BP_C::UpdateNestedStructCpp_OnRPCPayload(const worker::CommandRequestOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Updatenestedstructcpp>& Op)
+{
+	auto Receiver = [this, Op]() mutable -> FRPCCommandResponseResult
+	{
+		improbable::unreal::UnrealObjectRef TargetObjectRef{Op.EntityId, Op.Request.target_subobject_offset(), {}, {}};
+		FNetworkGUID TargetNetGUID = PackageMap->GetNetGUIDFromUnrealObjectRef(TargetObjectRef);
+		if (!TargetNetGUID.IsValid())
+		{
+			// A legal static object reference should never be unresolved.
+			checkf(TargetObjectRef.path().empty(), TEXT("A stably named object should not need resolution."));
+			UE_LOG(LogSpatialGDKInterop, Log, TEXT("%s: UpdateNestedStructCpp_OnRPCPayload: Target object %s is not resolved on this worker."),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ObjectRefToString(TargetObjectRef));
+			return {TargetObjectRef};
+		}
+		UObject* TargetObject = PackageMap->GetObjectFromNetGUID(TargetNetGUID, false);
+		checkf(TargetObject, TEXT("%s: UpdateNestedStructCpp_OnRPCPayload: Object Ref %s (NetGUID %s) does not correspond to a UObject."),
+			*Interop->GetSpatialOS()->GetWorkerId(),
+			*ObjectRefToString(TargetObjectRef),
+			*TargetNetGUID.ToString());
+
+		// Call implementation.
+		UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received RPC: UpdateNestedStructCpp, target: %s %s"),
+			*Interop->GetSpatialOS()->GetWorkerId(),
+			*TargetObject->GetName(),
+			*ObjectRefToString(TargetObjectRef));
+
+		if (UFunction* Function = TargetObject->FindFunction(FName(TEXT("UpdateNestedStructCpp"))))
+		{
+			TargetObject->ProcessEvent(Function, nullptr);
+		}
+		else
+		{
+			UE_LOG(LogSpatialGDKInterop, Error, TEXT("%s: UpdateNestedStructCpp_OnRPCPayload: Function not found. Object: %s, Function: UpdateNestedStructCpp."),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*TargetObject->GetFullName());
+		}
+
+		// Send command response.
+		TSharedPtr<worker::Connection> Connection = Interop->GetSpatialOS()->GetConnection().Pin();
+		Connection->SendCommandResponse<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Updatenestedstructcpp>(Op.RequestId, {});
+		return {};
+	};
+	Interop->InvokeRPCReceiveHandler_Internal(Receiver);
+}
+void USpatialTypeBinding_StarterProjectCharacter_BP_C::UpdateNestedStructBP_OnRPCPayload(const worker::CommandRequestOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Updatenestedstructbp>& Op)
+{
+	auto Receiver = [this, Op]() mutable -> FRPCCommandResponseResult
+	{
+		improbable::unreal::UnrealObjectRef TargetObjectRef{Op.EntityId, Op.Request.target_subobject_offset(), {}, {}};
+		FNetworkGUID TargetNetGUID = PackageMap->GetNetGUIDFromUnrealObjectRef(TargetObjectRef);
+		if (!TargetNetGUID.IsValid())
+		{
+			// A legal static object reference should never be unresolved.
+			checkf(TargetObjectRef.path().empty(), TEXT("A stably named object should not need resolution."));
+			UE_LOG(LogSpatialGDKInterop, Log, TEXT("%s: UpdateNestedStructBP_OnRPCPayload: Target object %s is not resolved on this worker."),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*ObjectRefToString(TargetObjectRef));
+			return {TargetObjectRef};
+		}
+		UObject* TargetObject = PackageMap->GetObjectFromNetGUID(TargetNetGUID, false);
+		checkf(TargetObject, TEXT("%s: Update Nested Struct BP_OnRPCPayload: Object Ref %s (NetGUID %s) does not correspond to a UObject."),
+			*Interop->GetSpatialOS()->GetWorkerId(),
+			*ObjectRefToString(TargetObjectRef),
+			*TargetNetGUID.ToString());
+
+		// Call implementation.
+		UE_LOG(LogSpatialGDKInterop, Verbose, TEXT("%s: Received RPC: Update Nested Struct BP, target: %s %s"),
+			*Interop->GetSpatialOS()->GetWorkerId(),
+			*TargetObject->GetName(),
+			*ObjectRefToString(TargetObjectRef));
+
+		if (UFunction* Function = TargetObject->FindFunction(FName(TEXT("Update Nested Struct BP"))))
+		{
+			TargetObject->ProcessEvent(Function, nullptr);
+		}
+		else
+		{
+			UE_LOG(LogSpatialGDKInterop, Error, TEXT("%s: UpdateNestedStructBP_OnRPCPayload: Function not found. Object: %s, Function: UpdateNestedStructBP."),
+				*Interop->GetSpatialOS()->GetWorkerId(),
+				*TargetObject->GetFullName());
+		}
+
+		// Send command response.
+		TSharedPtr<worker::Connection> Connection = Interop->GetSpatialOS()->GetConnection().Pin();
+		Connection->SendCommandResponse<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Updatenestedstructbp>(Op.RequestId, {});
 		return {};
 	};
 	Interop->InvokeRPCReceiveHandler_Internal(Receiver);
@@ -5752,6 +7115,16 @@ void USpatialTypeBinding_StarterProjectCharacter_BP_C::SetArrOfStructs2_OnComman
 void USpatialTypeBinding_StarterProjectCharacter_BP_C::RPCStructInput_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Rpcstructinput>& Op)
 {
 	Interop->HandleCommandResponse_Internal(TEXT("RPCStructInput"), Op.RequestId.Id, Op.EntityId, Op.StatusCode, FString(UTF8_TO_TCHAR(Op.Message.c_str())));
+}
+
+void USpatialTypeBinding_StarterProjectCharacter_BP_C::UpdateNestedStructCpp_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Updatenestedstructcpp>& Op)
+{
+	Interop->HandleCommandResponse_Internal(TEXT("UpdateNestedStructCpp"), Op.RequestId.Id, Op.EntityId, Op.StatusCode, FString(UTF8_TO_TCHAR(Op.Message.c_str())));
+}
+
+void USpatialTypeBinding_StarterProjectCharacter_BP_C::UpdateNestedStructBP_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Updatenestedstructbp>& Op)
+{
+	Interop->HandleCommandResponse_Internal(TEXT("Update Nested Struct BP"), Op.RequestId.Id, Op.EntityId, Op.StatusCode, FString(UTF8_TO_TCHAR(Op.Message.c_str())));
 }
 
 void USpatialTypeBinding_StarterProjectCharacter_BP_C::TestRPC_OnCommandResponse(const worker::CommandResponseOp<improbable::unreal::generated::starterprojectcharacterbpc::StarterProjectCharacterBPCServerRPCs::Commands::Testrpc>& Op)

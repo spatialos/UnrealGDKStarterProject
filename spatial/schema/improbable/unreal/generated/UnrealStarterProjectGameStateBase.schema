@@ -5,10 +5,10 @@ package improbable.unreal.generated.starterprojectgamestatebase;
 import "improbable/unreal/gdk/core_types.schema";
 
 component StarterProjectGameStateBaseSingleClientRepData {
-	id = 100028;
+	id = 100034;
 }
 component StarterProjectGameStateBaseMultiClientRepData {
-	id = 100029;
+	id = 100035;
 	bool field_bhidden0 = 1; // COND_None // ::Actor
 	bool field_breplicatemovement0 = 2; // COND_None // ::Actor
 	bool field_btearoff0 = 3; // COND_None // ::Actor
@@ -30,15 +30,15 @@ component StarterProjectGameStateBaseMultiClientRepData {
 	float field_replicatedworldtimeseconds0 = 19; // COND_None // ::GameStateBase
 }
 component StarterProjectGameStateBaseHandoverData {
-	id = 100030;
+	id = 100036;
 }
 
 component StarterProjectGameStateBaseClientRPCs {
-	id = 100031;
+	id = 100037;
 }
 component StarterProjectGameStateBaseServerRPCs {
-	id = 100032;
+	id = 100038;
 }
 component StarterProjectGameStateBaseNetMulticastRPCs {
-	id = 100033;
+	id = 100039;
 }

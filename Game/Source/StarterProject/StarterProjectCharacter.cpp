@@ -52,6 +52,16 @@ AStarterProjectCharacter::AStarterProjectCharacter()
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
 
+void AStarterProjectCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AStarterProjectCharacter, MyCppStructArr);
+	DOREPLIFETIME(AStarterProjectCharacter, MyCppStructIns);
+	DOREPLIFETIME(AStarterProjectCharacter, MyNestedStructIns);
+	DOREPLIFETIME(AStarterProjectCharacter, MyNestedStructArr);
+}
+
 void AStarterProjectCharacter::BeginPlay()
 {
 	Super::BeginPlay();

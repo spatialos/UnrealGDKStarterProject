@@ -1,14 +1,14 @@
 // Copyright (c) Improbable Worlds Ltd, All Rights Reserved
 // Note that this file has been generated automatically
-package improbable.unreal.generated.starterprojectcharacter;
+package improbable.unreal.generated.starterprojectcharacterbpc;
 
 import "improbable/unreal/gdk/core_types.schema";
 
-component StarterProjectCharacterSingleClientRepData {
-	id = 100022;
+component StarterProjectCharacterBPCSingleClientRepData {
+	id = 100028;
 }
-component StarterProjectCharacterMultiClientRepData {
-	id = 100023;
+component StarterProjectCharacterBPCMultiClientRepData {
+	id = 100029;
 	bool field_bhidden0 = 1; // COND_None // ::Actor
 	bool field_breplicatemovement0 = 2; // COND_None // ::Actor
 	bool field_btearoff0 = 3; // COND_None // ::Actor
@@ -58,18 +58,42 @@ component StarterProjectCharacterMultiClientRepData {
 	list<bool> field_mynestedstructins0_boolarr0 = 47; // COND_None // MyCppNestedStruct::MyNestedStructIns::StarterProjectCharacter
 	list<bytes> field_mycppstructarr0 = 48; // COND_None // ::StarterProjectCharacter
 	list<bytes> field_mynestedstructarr0 = 49; // COND_None // ::StarterProjectCharacter
+	bool field_mybool0 = 50; // COND_None // ::StarterProjectCharacter_BP_C
+	list<bool> field_myarrofbools0 = 51; // COND_None // ::StarterProjectCharacter_BP_C
+	bool field_mystructvar0_structbool176b6bada4ba8fea4761b938495dea0e10 = 52; // COND_None // MyStruct::MyStructVar::StarterProjectCharacter_BP_C
+	bytes field_mystructvar0_structvec4734f338f470a88c85c79289bbb7e84670 = 53; // COND_None // MyStruct::MyStructVar::StarterProjectCharacter_BP_C
+	list<bytes> field_myarrofstructs0 = 54; // COND_None // ::StarterProjectCharacter_BP_C
+	list<bool> field_mystructnested0_myboolarraynested787d2b213446573ec06159db37e89cd990 = 55; // COND_None // MyStructWithArray::MyStructNested::StarterProjectCharacter_BP_C
+	list<bytes> field_mystructnested0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70 = 56; // COND_None // MyStructWithArray::MyStructNested::StarterProjectCharacter_BP_C
+	list<bytes> field_mystructnestedarr0 = 57; // COND_None // ::StarterProjectCharacter_BP_C
+	list<bool> field_mystructlv2ins0_lv1ins2efc0167049b51ffb215e2284c0988e4b0_myboolarraynested787d2b213446573ec06159db37e89cd990 = 58; // COND_None // MyStructWithArray::lv1ins_2_EFC0167049B51FFB215E2284C0988E4BMyStructLv2::MyStructLv2Ins::StarterProjectCharacter_BP_C
+	list<bytes> field_mystructlv2ins0_lv1ins2efc0167049b51ffb215e2284c0988e4b0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70 = 59; // COND_None // MyStructWithArray::lv1ins_2_EFC0167049B51FFB215E2284C0988E4BMyStructLv2::MyStructLv2Ins::StarterProjectCharacter_BP_C
+	list<bytes> field_mystructlv2ins0_lv1arr56e29525c4699b03778e671ba749c6ea70 = 60; // COND_None // MyStructLv2::MyStructLv2Ins::StarterProjectCharacter_BP_C
+	bool field_mystructlv2ins0_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structbool176b6bada4ba8fea4761b938495dea0e10 = 61; // COND_None // MyStruct::lv0ins_9_A4B4EC294F2B5A8EE604A78342AEC4FDMyStructLv2::MyStructLv2Ins::StarterProjectCharacter_BP_C
+	bytes field_mystructlv2ins0_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structvec4734f338f470a88c85c79289bbb7e84670 = 62; // COND_None // MyStruct::lv0ins_9_A4B4EC294F2B5A8EE604A78342AEC4FDMyStructLv2::MyStructLv2Ins::StarterProjectCharacter_BP_C
+	list<bytes> field_mystructlv2arr0 = 63; // COND_None // ::StarterProjectCharacter_BP_C
+	list<bool> field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1ins2efc0167049b51ffb215e2284c0988e4b0_myboolarraynested787d2b213446573ec06159db37e89cd990 = 64; // COND_None // MyStructWithArray::lv1ins_2_EFC0167049B51FFB215E2284C0988E4BMyStructLv2::lv2ins_3_BC6BEB9D4C9AFC99D6925F881E8DEB21MyStructlv3::MyStructlv3ins::StarterProjectCharacter_BP_C
+	list<bytes> field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1ins2efc0167049b51ffb215e2284c0988e4b0_mystructarraynested63b3d5a594bf31a5d239e52af9ad0d3d70 = 65; // COND_None // MyStructWithArray::lv1ins_2_EFC0167049B51FFB215E2284C0988E4BMyStructLv2::lv2ins_3_BC6BEB9D4C9AFC99D6925F881E8DEB21MyStructlv3::MyStructlv3ins::StarterProjectCharacter_BP_C
+	list<bytes> field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv1arr56e29525c4699b03778e671ba749c6ea70 = 66; // COND_None // MyStructLv2::lv2ins_3_BC6BEB9D4C9AFC99D6925F881E8DEB21MyStructlv3::MyStructlv3ins::StarterProjectCharacter_BP_C
+	bool field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structbool176b6bada4ba8fea4761b938495dea0e10 = 67; // COND_None // MyStruct::lv0ins_9_A4B4EC294F2B5A8EE604A78342AEC4FDMyStructLv2::lv2ins_3_BC6BEB9D4C9AFC99D6925F881E8DEB21MyStructlv3::MyStructlv3ins::StarterProjectCharacter_BP_C
+	bytes field_mystructlv3ins0_lv2ins3bc6beb9d4c9afc99d6925f881e8deb210_lv0ins9a4b4ec294f2b5a8ee604a78342aec4fd0_structvec4734f338f470a88c85c79289bbb7e84670 = 68; // COND_None // MyStruct::lv0ins_9_A4B4EC294F2B5A8EE604A78342AEC4FDMyStructLv2::lv2ins_3_BC6BEB9D4C9AFC99D6925F881E8DEB21MyStructlv3::MyStructlv3ins::StarterProjectCharacter_BP_C
+	list<bytes> field_mystructlv3ins0_lv2arr67a77e9954d2d0a825445fcae349de7050 = 69; // COND_None // MyStructlv3::MyStructlv3ins::StarterProjectCharacter_BP_C
+	list<bytes> field_mystructlv3ins0_lv1arr91ee4dd494c52603042686dbb437959400 = 70; // COND_None // MyStructlv3::MyStructlv3ins::StarterProjectCharacter_BP_C
+	list<bytes> field_mystructlv3ins0_vectorarr139869b6eb4c946b8a5b8b32931edb24130 = 71; // COND_None // MyStructlv3::MyStructlv3ins::StarterProjectCharacter_BP_C
+	list<bytes> field_mystructlv3arr0 = 72; // COND_None // ::StarterProjectCharacter_BP_C
 }
-component StarterProjectCharacterHandoverData {
-	id = 100024;
+component StarterProjectCharacterBPCHandoverData {
+	id = 100030;
 	uint32 field_charactermovement0_movementmode0 = 1;
 	uint32 field_charactermovement0_custommovementmode0 = 2;
 	uint32 field_charactermovement0_groundmovementmode0 = 3;
 }
+import "improbable/unreal/generated/UnrealStarterProjectCharacterBPCTypes.schema";
 import "improbable/unreal/generated/UnrealStarterProjectCharacterTypes.schema";
 import "improbable/unreal/generated/UnrealCharacterTypes.schema";
 
-component StarterProjectCharacterClientRPCs {
-	id = 100025;
+component StarterProjectCharacterBPCClientRPCs {
+	id = 100031;
 	command UnrealRPCCommandResponse testclientrpc(starterprojectcharacter.TestClientRPCRequest);
 	command UnrealRPCCommandResponse rootmotiondebugclientprintonscreen(character.RootMotionDebugClientPrintOnScreenRequest);
 	command UnrealRPCCommandResponse clientveryshortadjustposition(character.ClientVeryShortAdjustPositionRequest);
@@ -81,8 +105,13 @@ component StarterProjectCharacterClientRPCs {
 	command UnrealRPCCommandResponse clientadjustposition(character.ClientAdjustPositionRequest);
 	command UnrealRPCCommandResponse clientackgoodmove(character.ClientAckGoodMoveRequest);
 }
-component StarterProjectCharacterServerRPCs {
-	id = 100026;
+component StarterProjectCharacterBPCServerRPCs {
+	id = 100032;
+	command UnrealRPCCommandResponse setarrofstructs1(starterprojectcharacterbpc.SetArrOfStructs1Request);
+	command UnrealRPCCommandResponse setarrofstructs2(starterprojectcharacterbpc.SetArrOfStructs2Request);
+	command UnrealRPCCommandResponse rpcstructinput(starterprojectcharacterbpc.RPCStructInputRequest);
+	command UnrealRPCCommandResponse updatenestedstructcpp(starterprojectcharacterbpc.UpdateNestedStructCppRequest);
+	command UnrealRPCCommandResponse updatenestedstructbp(starterprojectcharacterbpc.UpdateNestedStructBPRequest);
 	command UnrealRPCCommandResponse testrpc(starterprojectcharacter.TestRPCRequest);
 	command UnrealRPCCommandResponse servermoveold(character.ServerMoveOldRequest);
 	command UnrealRPCCommandResponse servermovenobase(character.ServerMoveNoBaseRequest);
@@ -91,7 +120,7 @@ component StarterProjectCharacterServerRPCs {
 	command UnrealRPCCommandResponse servermovedual(character.ServerMoveDualRequest);
 	command UnrealRPCCommandResponse servermove(character.ServerMoveRequest);
 }
-component StarterProjectCharacterNetMulticastRPCs {
-	id = 100027;
+component StarterProjectCharacterBPCNetMulticastRPCs {
+	id = 100033;
 	event starterprojectcharacter.TestMulticastRequest testmulticast;
 }
