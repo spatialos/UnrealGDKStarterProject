@@ -6,7 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "StarterProjectGameMode.generated.h"
 
-UCLASS(minimalapi, Spatial=PrivateSingleton)
+UCLASS(minimalapi, SpatialType=(Singleton, ServerOnly))
 class AStarterProjectGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
