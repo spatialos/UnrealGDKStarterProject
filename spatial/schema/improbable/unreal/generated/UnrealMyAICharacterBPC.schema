@@ -5,10 +5,10 @@ package improbable.unreal.generated.myaicharacterbpc;
 import "improbable/unreal/gdk/core_types.schema";
 
 component MyAICharacterBPCSingleClientRepData {
-	id = 100045;
+	id = 100038;
 }
 component MyAICharacterBPCMultiClientRepData {
-	id = 100046;
+	id = 100039;
 	bool field_bhidden0 = 1; // COND_None // ::Actor
 	bool field_breplicatemovement0 = 2; // COND_None // ::Actor
 	bool field_btearoff0 = 3; // COND_None // ::Actor
@@ -54,7 +54,7 @@ component MyAICharacterBPCMultiClientRepData {
 	bytes field_reprootmotion0_linearvelocity0 = 43; // COND_SimulatedOnlyNoReplay // RepRootMotionMontage::RepRootMotion::Character
 }
 component MyAICharacterBPCHandoverData {
-	id = 100047;
+	id = 100040;
 	uint32 field_charactermovement0_movementmode0 = 1;
 	uint32 field_charactermovement0_custommovementmode0 = 2;
 	uint32 field_charactermovement0_groundmovementmode0 = 3;
@@ -64,7 +64,7 @@ component MyAICharacterBPCHandoverData {
 import "improbable/unreal/generated/UnrealCharacterTypes.schema";
 
 component MyAICharacterBPCClientRPCs {
-	id = 100048;
+	id = 100041;
 	command UnrealRPCCommandResponse rootmotiondebugclientprintonscreen(character.RootMotionDebugClientPrintOnScreenRequest);
 	command UnrealRPCCommandResponse clientveryshortadjustposition(character.ClientVeryShortAdjustPositionRequest);
 	command UnrealRPCCommandResponse clientcheatwalk(character.ClientCheatWalkRequest);
@@ -76,7 +76,7 @@ component MyAICharacterBPCClientRPCs {
 	command UnrealRPCCommandResponse clientackgoodmove(character.ClientAckGoodMoveRequest);
 }
 component MyAICharacterBPCServerRPCs {
-	id = 100049;
+	id = 100042;
 	command UnrealRPCCommandResponse servermoveold(character.ServerMoveOldRequest);
 	command UnrealRPCCommandResponse servermovenobase(character.ServerMoveNoBaseRequest);
 	command UnrealRPCCommandResponse servermovedualnobase(character.ServerMoveDualNoBaseRequest);
@@ -85,8 +85,8 @@ component MyAICharacterBPCServerRPCs {
 	command UnrealRPCCommandResponse servermove(character.ServerMoveRequest);
 }
 component MyAICharacterBPCCrossServerRPCs {
-	id = 100050;
+	id = 100043;
 }
 component MyAICharacterBPCNetMulticastRPCs {
-	id = 100051;
+	id = 100044;
 }
