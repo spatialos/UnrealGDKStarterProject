@@ -7,7 +7,7 @@
 #include "GameFramework/Character.h"
 #include "StarterProjectCharacter.generated.h"
 
-UCLASS(config=Game)
+UCLASS(config=Game, SpatialType)
 class AStarterProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()

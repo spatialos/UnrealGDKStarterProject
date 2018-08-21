@@ -3,6 +3,7 @@
 #include "StarterProjectGameMode.h"
 #include "StarterProjectPlayerController.h"
 #include "StarterProjectGameStateBase.h"
+#include "StarterProjectPlayerState.h"
 #include "UObject/ConstructorHelpers.h"
 
 AStarterProjectGameMode::AStarterProjectGameMode()
@@ -16,4 +17,5 @@ AStarterProjectGameMode::AStarterProjectGameMode()
 
 	PlayerControllerClass = AStarterProjectPlayerController::StaticClass();
 	GameStateClass = AStarterProjectGameStateBase::StaticClass();
+	PlayerStateClass = AStarterProjectPlayerState::StaticClass();
 }

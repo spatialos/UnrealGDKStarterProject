@@ -6,7 +6,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "StarterProjectGameStateBase.generated.h"
 
-UCLASS()
+UCLASS(SpatialType=Singleton)
 class STARTERPROJECT_API AStarterProjectGameStateBase : public AGameStateBase
 {
 	GENERATED_BODY()
