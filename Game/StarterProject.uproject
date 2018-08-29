@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{594FE353-43A3-F1B1-D054-41BA6971F9AF}",
+	"EngineAssociation": "{ACE837FF-4F38-F586-1A42-228CBE71E2E7}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -10,7 +10,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"SpatialGDK"
+				"SpatialGDK",
+				"AIModule"
 			]
 		},
 		{

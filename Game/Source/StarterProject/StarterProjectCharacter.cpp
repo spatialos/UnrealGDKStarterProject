@@ -57,6 +57,11 @@ void AStarterProjectCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AStarterProjectCharacter::OnSpatialAuthorityChange(int AuthChangeOp)
+{
+	Super::OnSpatialAuthorityChange(AuthChangeOp);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
