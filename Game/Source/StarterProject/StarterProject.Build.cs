@@ -14,6 +14,7 @@ public class StarterProject : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+				"AIModule",
 				"InputCore",
 				"Sockets",
 				"OnlineSubsystemUtils",
