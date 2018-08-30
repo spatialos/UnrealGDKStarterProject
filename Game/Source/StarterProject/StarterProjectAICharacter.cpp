@@ -31,7 +31,6 @@ void AStarterProjectAICharacter::Tick(float DeltaTime)
 void AStarterProjectAICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void AStarterProjectAICharacter::SpawnDefaultController()

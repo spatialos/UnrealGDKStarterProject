@@ -22,6 +22,8 @@ struct FBlackboardKeyData
 
 	UPROPERTY()
 	uint16 ValueSize;
+
+	FBlackboardKeyData() : ValueSize(0) {}
 };
 
 
@@ -46,6 +48,9 @@ class STARTERPROJECT_API AStarterProjectAIController : public AAIController
 	virtual void Destroyed() override;
 
 	EBlackboardNotificationResult OnBlackboardKeyValueChange(const UBlackboardComponent& Blackboard, FBlackboard::FKey ChangedKeyID);
+	void UpdateAIHandover(const UBlackboardComponent& Blackboard, FBlackboard::FKey KeyID);
+
+	void OnSpatialAuthorityChange(int AuthChangeOp) override;
 
 protected:
 	virtual bool InitializeBlackboard(UBlackboardComponent& BlackboardComp, UBlackboardData& BlackboardAsset) override;
