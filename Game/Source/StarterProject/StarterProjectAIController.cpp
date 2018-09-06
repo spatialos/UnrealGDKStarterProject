@@ -10,14 +10,15 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BTAuxiliaryNode.h"
+#include "BehaviorTree/BTNode.h"
 
 void AStarterProjectAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Ideally this would be moved to before authorityloss so it only happens once before handover
-	// need soft authority loss time > 0
-	if (BrainComponent->IsRunning())
+	// Ideally this would be removed and only called from AuthChangeOp == 2, but this need soft authority loss time > 0 and has chance of losing data
+	// So we sync on every tick
+	if (BrainComponent->IsRunning() && bShouldUpdateHandover)
 	{
 		UpdateBehaviorTreeHandover();
 	}
@@ -38,9 +39,12 @@ void AStarterProjectAIController::OnSpatialAuthorityChange(int AuthChangeOp)
 	{
 		//BrainComponent->PauseLogic(TEXT("About to lose spatial authority"));
 		UE_LOG(LogTemp, Log, TEXT("exe step before authority loss: %d"), HandoverBTInstanceData(0).CurrentExeIndex);
+		UpdateBehaviorTreeHandover();
+		bShouldUpdateHandover = false;
 	}
 	else if (AuthChangeOp == 1)
 	{
+		bShouldUpdateHandover = true;
 		if (Blackboard != nullptr)
 		{
 			UBlackboardData* BlackboardAsset = Blackboard->GetBlackboardAsset();
@@ -77,27 +81,98 @@ void AStarterProjectAIController::OnSpatialAuthorityChange(int AuthChangeOp)
 
 		if (UBehaviorTreeComponent* BT = Cast<UBehaviorTreeComponent>(BrainComponent))
 		{
-			BT->ClearBeforeHandover();
-			for (int i=0; i < AIControllerHandover.BehaviorTreeInfo.InstanceStack.Num(); i++)
+			if (!BT->bStartRootNode)  // Don't run handover logic on initial spawn
 			{
-				for (auto AuxNodeIdx : HandoverBTInstanceData(i).AuxiliaryNodeInds)
+				int InstanceNums = AIControllerHandover.BehaviorTreeInfo.InstanceStack.Num();
+				if (InstanceNums > 0)
 				{
-					UBTAuxiliaryNode* AuxNode = Cast<UBTAuxiliaryNode>(BT->GetInstance(i)->GetNodeByExecutionIndex(AuxNodeIdx));
-					if (AuxNode)
-					{
-						UE_LOG(LogTemp, Log, TEXT("Syncing aux node: %s"), *AuxNode->NodeName);
-						BT->GetInstance(i)->ActiveAuxNodes.Add(AuxNode);
-						uint8* NodeMemory = (uint8*)AuxNode->GetNodeMemory<uint8>(i);
-						AuxNode->WrappedOnBecomeRelevant(*BT, NodeMemory);
-					}
-					else
-					{
-						UE_LOG(LogTemp, Warning, TEXT("Aux node (idx: %d) not found in instance %d"), AuxNodeIdx, i);
-					}
-				}
+					BT->ResetTreeForHandover(AIControllerHandover.BehaviorTreeInfo.TreeAssets);  // Reset and sync BT instances
 
-				UE_LOG(LogTemp, Log, TEXT("Resuming BT instance %d at execution step %d"), i, HandoverBTInstanceData(i).CurrentExeIndex);
-				SwitchExecution(HandoverBTInstanceData(i).CurrentExeIndex, i);
+
+					// TODO:
+					/* 
+					test test test -- how do I validate dynamic behavior tree handover?
+					make AI chase player past boundary?
+					
+					
+					*/
+
+
+
+					for (int InstanceNum = 0; InstanceNum < InstanceNums; InstanceNum++)
+					{
+						FBehaviorTreeInstance* CurrInstance = BT->GetInstance(InstanceNum);
+						if (!CurrInstance) break;
+
+						CurrInstance->InstanceMemory = HandoverBTInstanceData(InstanceNum).InstanceMemory;
+
+						// Set active node of all trees.
+						CurrInstance->ActiveNode = CurrInstance->GetNodeByExecutionIndex(HandoverBTInstanceData(InstanceNum).CurrentExeIndex);
+						CurrInstance->ActiveNodeType = HandoverBTInstanceData(InstanceNum).ActiveNodeType;
+						
+						for (auto AuxNodeIdx : HandoverBTInstanceData(InstanceNum).AuxiliaryNodeIdxs)
+						{
+							UBTAuxiliaryNode* AuxNode = Cast<UBTAuxiliaryNode>(CurrInstance->GetNodeByExecutionIndex(AuxNodeIdx));
+							if (AuxNode)
+							{
+								//UE_LOG(LogTemp, Log, TEXT("Syncing aux node: %s"), *AuxNode->NodeName);
+								CurrInstance->ActiveAuxNodes.Add(AuxNode);
+								uint8* NodeMemory = (uint8*)AuxNode->GetNodeMemory<uint8>(*CurrInstance);
+								AuxNode->WrappedOnBecomeRelevant(*BT, NodeMemory);
+							}
+							else
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Aux node (execution index: %d) not found in instance %d"), AuxNodeIdx, InstanceNum);
+							}
+						}
+
+						for (auto ParallelTaskData : HandoverBTInstanceData(InstanceNum).ParallelTasks)
+						{
+
+							// Copied from RegisterParallelTasks
+							// Modified as we may need to add tasks to background BT instances
+							const UBTTaskNode* TaskNode = Cast<UBTTaskNode>(CurrInstance->GetNodeByExecutionIndex(ParallelTaskData.TaskNodeIdx));
+							if (TaskNode)
+							{
+								CurrInstance->ParallelTasks.Add(FBehaviorTreeParallelTask(TaskNode, ParallelTaskData.Status));
+
+								UE_LOG(LogBehaviorTree, Verbose, TEXT("Parallel task: %s restored after handover to instance %d"),
+									*UBehaviorTreeTypes::DescribeNodeHelper(TaskNode), InstanceNum);
+
+								if (CurrInstance->ActiveNode == TaskNode)
+								{
+									// switch to inactive state, so it could start background tree
+									CurrInstance->ActiveNodeType = EBTActiveNode::InactiveTask;
+								}
+							}
+							else
+							{
+								UE_LOG(LogBehaviorTree, Warning, TEXT("Parallel Task node (execution index: %d) not found in instance %d"), ParallelTaskData.TaskNodeIdx, InstanceNum);
+							}
+						}
+					}
+
+					// Brute force comparison to match instance nodes
+					for (auto InstancedNode : BT->GetNodeInstances())
+					{
+						for (auto SavedInstancedNode : AIControllerHandover.BehaviorTreeInfo.NodeInstances)
+						{
+							if (InstancedNode->GetTreeAsset() == SavedInstancedNode.TreeAsset
+								&& InstancedNode->GetExecutionIndex() == SavedInstancedNode.ExecutionIndex)
+							{
+								// If match found, update the Memory Offset to match data before handover
+								// This, along with copying over the BTInstance memory block, ensures that the new tree memory lines up with the old one
+								InstancedNode->InitializeNode(InstancedNode->GetParentNode(), InstancedNode->GetExecutionIndex(), SavedInstancedNode.MemoryOffset, InstancedNode->GetTreeDepth());
+							}
+						}
+					}
+
+					// Start execution of current tree; trigger search for child task node if ActiveNode is composite node
+					SwitchExecution(HandoverBTInstanceData(InstanceNums-1).CurrentExeIndex, InstanceNums - 1);
+					UE_LOG(LogTemp, Log, TEXT("Resuming BT instance %d at execution step %d"), InstanceNums - 1, HandoverBTInstanceData(InstanceNums-1).CurrentExeIndex);
+				}
+				
+				BT->bStartRootNode = true;  // Re-enable spawning subtrees
 			}
 		}
 	}
@@ -126,20 +201,40 @@ void AStarterProjectAIController::UpdateBehaviorTreeHandover()
 	if (UBehaviorTreeComponent* BT = Cast<UBehaviorTreeComponent>(BrainComponent))
 	{
 		AIControllerHandover.BehaviorTreeInfo.InstanceStack.SetNum(BT->GetInstanceNum());
-		for (int i=0; i<BT->GetInstanceNum(); i++)
+		AIControllerHandover.BehaviorTreeInfo.TreeAssets.SetNum(BT->GetInstanceNum());
+		for (int InstanceNum=0; InstanceNum<BT->GetInstanceNum(); InstanceNum++)
 		{
-			FBehaviorTreeInstance* Instance = BT->GetInstance(i);
+			FBehaviorTreeInstance* Instance = BT->GetInstance(InstanceNum);
+			HandoverBTInstanceData(InstanceNum).InstanceMemory = Instance->InstanceMemory;
+
 			if (const UBTNode* ActiveNode = Instance->ActiveNode)
 			{
-				//UE_LOG(LogTemp, Log, TEXT("active node: %s"), *ActiveNode->NodeName);
-				HandoverBTInstanceData(i).CurrentExeIndex = ActiveNode->GetExecutionIndex();
+				HandoverBTInstanceData(InstanceNum).CurrentExeIndex = ActiveNode->GetExecutionIndex();
+				HandoverBTInstanceData(InstanceNum).ActiveNodeType = Instance->ActiveNodeType;
 			}
 
 			for (auto AuxNode : Instance->ActiveAuxNodes)
 			{
-				//UE_LOG(LogTemp, Log, TEXT("aux node: %s"), *AuxNode->NodeName);
-				HandoverBTInstanceData(i).AuxiliaryNodeInds.Add(AuxNode->GetExecutionIndex());
+				// Since it's a set, we can just Add without duplicates
+				HandoverBTInstanceData(InstanceNum).AuxiliaryNodeIdxs.Add(AuxNode->GetExecutionIndex());
 			}
+
+			// For custom structs, however, TSet doesn't work
+			HandoverBTInstanceData(InstanceNum).ParallelTasks.Reset();
+			for (auto ParallelTask : Instance->ParallelTasks)
+			{
+				FBehaviorTreeParallelTaskData TaskData = {ParallelTask.TaskNode->GetExecutionIndex(), ParallelTask.Status};
+				HandoverBTInstanceData(InstanceNum).ParallelTasks.Add(TaskData);
+			}
+
+			AIControllerHandover.BehaviorTreeInfo.TreeAssets[InstanceNum] = BT->GetKnownInstance(InstanceNum).TreeAsset;
+		}
+
+		AIControllerHandover.BehaviorTreeInfo.NodeInstances.Reset();
+		for (auto InstancedNode : BT->GetNodeInstances())
+		{
+			FBTNodeData NodeData = {InstancedNode->GetTreeAsset(), InstancedNode->GetExecutionIndex(), InstancedNode->GetMemoryOffset()};
+			AIControllerHandover.BehaviorTreeInfo.NodeInstances.Add(NodeData);
 		}
 	}
 }
@@ -161,8 +256,7 @@ EBlackboardNotificationResult AStarterProjectAIController::OnBlackboardKeyValueC
 
 bool AStarterProjectAIController::RunBehaviorTree(UBehaviorTree* BTAsset)
 {
-	bool res = Super::RunBehaviorTree(BTAsset);
-
+	bool bStartRootNode = true;
 	// TODO: this is a workaround until we can query a replicated UObject*'s UnrealObjRef - UNR-407
 	// Wait to execute behavior tree until we receive handover data
 	UWorld* World = GetWorld();
@@ -175,13 +269,48 @@ bool AStarterProjectAIController::RunBehaviorTree(UBehaviorTree* BTAsset)
 		if (EntityId != 0)
 		{
 			// EntityId is not 0, which means that this AI controller has already been initialized.
-			// Pause so that we still initialize our tree but don't run any actions
-			//BrainComponent->PauseLogic(TEXT("Waiting for spatial authority"));
-			
+			// Initialize tree as normal, but don't start execution at root (instead wait for handover)
+			bStartRootNode = false;
 		}
 	}
 
-	return res;
+	// Copied from AIController::RunBehaviorTree
+	if (BTAsset == NULL)
+	{
+		UE_LOG(LogBehaviorTree, Warning, TEXT("RunBehaviorTree: Unable to run NULL behavior tree"));
+		return false;
+	}
+
+	bool bSuccess = true;
+	bool bShouldInitializeBlackboard = false;
+
+	// see if need a blackboard component at all
+	UBlackboardComponent* BlackboardComp = Blackboard;
+	if (BTAsset->BlackboardAsset && (Blackboard == nullptr || Blackboard->IsCompatibleWith(BTAsset->BlackboardAsset) == false))
+	{
+		bSuccess = UseBlackboard(BTAsset->BlackboardAsset, BlackboardComp);
+	}
+
+	if (bSuccess)
+	{
+		UBehaviorTreeComponent* BTComp = Cast<UBehaviorTreeComponent>(BrainComponent);
+		if (BTComp == NULL)
+		{
+			UE_LOG(LogBehaviorTree, Log, TEXT("RunBehaviorTree: spawning BehaviorTreeComponent.."));
+
+			BTComp = NewObject<UBehaviorTreeComponent>(this, TEXT("BTComponent"));
+			BTComp->RegisterComponent();
+		}
+
+		// make sure BrainComponent points at the newly created BT component
+		BrainComponent = BTComp;
+
+		check(BTComp != NULL);
+		BTComp->bStartRootNode = bStartRootNode; /* IMPROBABLE-CHANGE */
+		BTComp->StartTree(*BTAsset, EBTExecutionMode::Looped);
+	}
+
+	return bSuccess;
 }
 
 

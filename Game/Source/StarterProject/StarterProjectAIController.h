@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "BehaviorTree/BehaviorTreeTypes.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "StarterProjectAIController.generated.h"
 
 /**
@@ -25,41 +26,46 @@ struct FBlackboardKeyData
 	FBlackboardKeyData() : ValueSize(0) {}
 };
 
+USTRUCT()
+struct FBehaviorTreeParallelTaskData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY()
+	uint16 TaskNodeIdx;
+
+	UPROPERTY()
+	TEnumAsByte<EBTTaskStatus::Type> Status;
+};
 
 USTRUCT()
 struct FBehaviorTreeInstanceData
 {
 	GENERATED_USTRUCT_BODY()
 
-	//UPROPERTY()
-	//TArray<uint8> InstanceMemory;
+	UPROPERTY()
+	TArray<uint8> InstanceMemory;
 
 	UPROPERTY()
-	TSet<uint16> AuxiliaryNodeInds;
+	TSet<uint16> AuxiliaryNodeIdxs;
 
 	UPROPERTY()
-	int32 CurrentExeIndex;
-	/*
-	active aux nodes
+	int32 CurrentExeIndex;  // Uniquely identifies ActiveNode
+	
+	UPROPERTY()
+	TArray<FBehaviorTreeParallelTaskData> ParallelTasks;
 
-	parralleltasks
-
-	activenode
-
-	activenodetype
-	*/
+	UPROPERTY()
+	TEnumAsByte<EBTActiveNode::Type> ActiveNodeType;
 };
 
 USTRUCT()
-struct FBehaviorTreeInstanceIdData
+struct FBTNodeData
 {
 	GENERATED_USTRUCT_BODY()
-};
 
-USTRUCT()
-struct FUBTNodeData
-{
-	GENERATED_USTRUCT_BODY()
+	UPROPERTY()
+	UBehaviorTree* TreeAsset;
 
 	UPROPERTY()
 	uint16 ExecutionIndex;
@@ -76,26 +82,14 @@ struct FBehaviorTreeData
 	UPROPERTY()
 	TArray<FBehaviorTreeInstanceData> InstanceStack;
 
-	/*
 	UPROPERTY()
-	TArray<FBehaviorTreeInstanceIdData> KnownInstances;
+	TArray<UBehaviorTree*> TreeAssets;
 
 	UPROPERTY()
-	TArray<FUBTNodeData> NodeInstances;
-	*/
+	TArray<FBTNodeData> NodeInstances;
+
 	UPROPERTY()
 	uint16 ActiveInstanceIdx;
-
-	UPROPERTY()
-	uint8 bDeferredStopTree : 1;
-	UPROPERTY()
-	uint8 bWaitingForAbortingTasks : 1;
-	UPROPERTY()
-	uint8 bRequestedFlowUpdate : 1;
-	UPROPERTY()
-	uint8 bIsRunning : 1;
-	UPROPERTY()
-	uint8 bIsPaused : 1;
 };
 
 
@@ -120,6 +114,8 @@ class STARTERPROJECT_API AStarterProjectAIController : public AAIController
 	UPROPERTY(Handover)
 	FHandoverAIData AIControllerHandover;
 
+	bool bShouldUpdateHandover;
+
 	FBehaviorTreeInstanceData& HandoverBTInstanceData(int Idx);
 
 	virtual void Destroyed() override;
@@ -129,6 +125,7 @@ class STARTERPROJECT_API AStarterProjectAIController : public AAIController
 	void UpdateBlackboardHandover(const UBlackboardComponent& Blackboard, FBlackboard::FKey KeyID);
 	void UpdateBehaviorTreeHandover();
 
+	UFUNCTION(BlueprintCallable)
 	void OnSpatialAuthorityChange(int AuthChangeOp) override;
 
 	virtual bool RunBehaviorTree(UBehaviorTree* BTAsset) override;
