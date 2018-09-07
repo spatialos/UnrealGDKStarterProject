@@ -13,20 +13,6 @@ AStarterProjectAICharacter::AStarterProjectAICharacter()
 
 }
 
-// Called when the game starts or when spawned
-void AStarterProjectAICharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AStarterProjectAICharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 // Called to bind functionality to input
 void AStarterProjectAICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -52,10 +38,4 @@ void AStarterProjectAICharacter::SpawnDefaultController()
 	}
 
 	Super::SpawnDefaultController();
-}
-
-void AStarterProjectAICharacter::Destroyed()
-{
-	UE_LOG(LogTemp, Log, TEXT("%s being destroyed"), *this->GetName());
-	Super::Destroyed();
 }
