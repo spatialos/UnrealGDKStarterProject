@@ -1,11 +1,11 @@
 {
   "name": "unreal_gdk",
   "project_version": "0.0.1",
-  "sdk_version": "13.2.1-b5790-1da55-WORKER-SNAPSHOT",
+  "sdk_version": "13.3.0",
   "dependencies": [
     {
       "name": "standard_library",
-      "version": "13.2.1-b5790-1da55-WORKER-SNAPSHOT"
+      "version": "13.3.0"
     }
   ]
 }
