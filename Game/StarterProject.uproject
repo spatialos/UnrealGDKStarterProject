@@ -9,20 +9,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine",
-				"SpatialGDK"
+				"Engine"
 			]
-		},
-		{
-			"Name": "SpatialGDK",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		}
-	],
-	"Plugins": [
-		{
-			"Name": "SpatialGDK",
-			"Enabled": true
 		}
 	]
 }
