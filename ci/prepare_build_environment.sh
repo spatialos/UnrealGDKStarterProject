@@ -8,7 +8,7 @@ if ! isTeamCity ; then
 fi
 
 if ! isWindows ; then
-  echo "TestSuite can only be built on Windows."
+  echo "Starter project can only be built on Windows."
   exit 0
 fi
 

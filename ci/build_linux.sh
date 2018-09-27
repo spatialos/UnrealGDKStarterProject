@@ -10,7 +10,7 @@ markStartOfBlock "$0"
 
 source ci/prepare_build_environment.sh
 
-markStartOfBlock "Build the Starter project (Linux)"
+markStartOfBlock "Build the StarterProject (Linux)"
   # Build each target to ensure scripts are correct, skipping code generation on all but the first to save some time.
   Game/Plugins/UnrealGDK/SpatialGDK/Build/Scripts/BuildWorker.bat "StarterProjectEditor" "Win64" "Development" "StarterProject.uproject"
   if [[ ! -f "spatial/build/assembly/worker/UnrealEditor@Windows.zip" ]]; then
@@ -23,6 +23,6 @@ markStartOfBlock "Build the Starter project (Linux)"
     echo "Linux Server was not properly built."
     exit 1
   fi
-markEndOfBlock "Build the Starter project (Linux)"
+markEndOfBlock "Build the StarterProject (Linux)"
 
 markEndOfBlock "$0"
