@@ -18,4 +18,5 @@ AStarterProjectGameMode::AStarterProjectGameMode()
 	PlayerControllerClass = AStarterProjectPlayerController::StaticClass();
 	GameStateClass = AStarterProjectGameStateBase::StaticClass();
 	PlayerStateClass = AStarterProjectPlayerState::StaticClass();
+	bUseSeamlessTravel = true;
 }
