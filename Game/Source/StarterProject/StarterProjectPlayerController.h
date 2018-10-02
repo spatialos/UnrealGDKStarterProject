@@ -21,7 +21,7 @@ class STARTERPROJECT_API AStarterProjectPlayerController : public APlayerControl
 	void TestMulticast();
 
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
-	void ServerTravel();
+	void ServerTravel(const FString& MapName);
 
 public:
 

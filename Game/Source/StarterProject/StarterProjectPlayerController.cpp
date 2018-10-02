@@ -23,25 +23,32 @@ void AStarterProjectPlayerController::TestMulticast_Implementation()
 {
 }
 
-void AStarterProjectPlayerController::ServerTravel_Implementation()
+void AStarterProjectPlayerController::ServerTravel_Implementation(const FString& MapName)
 {
-	UE_LOG(LogTemp, Warning, TEXT("!!SERVER TRAVEL!!"));
+	UE_LOG(LogTemp, Warning, TEXT("!!SERVER TRAVEL to %s!!"), *MapName);
 
 	UWorld* World = GetWorld();
 	USpatialNetDriver* NetDriver = Cast<USpatialNetDriver>(World->GetNetDriver());
 
-	// TOOD: Need a 'done' thingy here
-	NetDriver->WipeWorld();
+	//// Reload snapshot.... (Currently in the WorldWIpe code)
+	//NetDriver->LoadSnapshot();
 
-	// Reload snapshot....
+	//USpatialNetDriver::WorldWipeDelegate ServerTravelAfterWorldWipe;
+	//ServerTravelAfterWorldWipe.BindLambda([World, NetDriver] {
+	//	World->ServerTravel(TEXT("/Game/ThirdPersonCPP/Maps/BestMap"), true);
+	//	NetDriver->LoadSnapshot();
+	//});
+
+	//// Delegate is called in USpatialNetDriver::WorldWipe;
+	//NetDriver->Delegate = ServerTravelAfterWorldWipe;
+
+	//NetDriver->WipeWorld();
+
+	World->ServerTravel(MapName, true);
 	NetDriver->LoadSnapshot();
-
-	FURL NewURL = World->URL;
-	NewURL.Map = "/Game/ThirdPersonCPP/Maps/BestMap";
-	World->ServerTravel(TEXT("/Game/ThirdPersonCPP/Maps/BestMap"), true);
 }
 
-bool AStarterProjectPlayerController::ServerTravel_Validate()
+bool AStarterProjectPlayerController::ServerTravel_Validate(const FString& MapName)
 {
 	UWorld* World = GetWorld();
 	USpatialNetDriver* NetDriver = Cast<USpatialNetDriver>(World->GetNetDriver());
