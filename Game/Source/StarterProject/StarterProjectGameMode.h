@@ -13,4 +13,6 @@ class AStarterProjectGameMode : public AGameModeBase
 
 public:
 	AStarterProjectGameMode();
+
+	void ProcessServerTravel(const FString& URL, bool bAbsolute) override;
 };

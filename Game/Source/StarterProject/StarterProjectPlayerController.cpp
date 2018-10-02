@@ -27,25 +27,14 @@ void AStarterProjectPlayerController::ServerTravel_Implementation(const FString&
 {
 	UE_LOG(LogTemp, Warning, TEXT("!!SERVER TRAVEL to %s!!"), *MapName);
 
+	// Mod the URL to include a server travel option.
+	FString SnapshotOption = "?snapshot=BestMap";
+	FString ModdedMapName = MapName;
+	ModdedMapName.Append(SnapshotOption);
+
 	UWorld* World = GetWorld();
-	USpatialNetDriver* NetDriver = Cast<USpatialNetDriver>(World->GetNetDriver());
 
-	//// Reload snapshot.... (Currently in the WorldWIpe code)
-	//NetDriver->LoadSnapshot();
-
-	//USpatialNetDriver::WorldWipeDelegate ServerTravelAfterWorldWipe;
-	//ServerTravelAfterWorldWipe.BindLambda([World, NetDriver] {
-	//	World->ServerTravel(TEXT("/Game/ThirdPersonCPP/Maps/BestMap"), true);
-	//	NetDriver->LoadSnapshot();
-	//});
-
-	//// Delegate is called in USpatialNetDriver::WorldWipe;
-	//NetDriver->Delegate = ServerTravelAfterWorldWipe;
-
-	//NetDriver->WipeWorld();
-
-	World->ServerTravel(MapName, true);
-	NetDriver->LoadSnapshot();
+	World->ServerTravel(ModdedMapName, true);
 }
 
 bool AStarterProjectPlayerController::ServerTravel_Validate(const FString& MapName)
