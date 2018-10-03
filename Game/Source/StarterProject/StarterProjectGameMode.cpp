@@ -86,9 +86,9 @@ void AStarterProjectGameMode::ProcessServerTravel(const FString& URL, bool bAbso
 	// Josh - Not being used at the moment, moving to be in the NewServer.
 	// LoadSnapshotAfterWorldWipe - Load the snapshot after the deletion commands have been sent.
 	USpatialNetDriver::ServerTravelDelegate LoadSnapshotAfterWorldWipe;
-	LoadSnapshotAfterWorldWipe.BindLambda([World, NetDriver, URL, FinishServerTravel] {
+	LoadSnapshotAfterWorldWipe.BindLambda([World, NetDriver, URL] {
 		UE_LOG(LogGameMode, Log, TEXT("- Loading the snapshot"));
-		NetDriver->LoadSnapshot(FinishServerTravel);
+		NetDriver->LoadSnapshot();
 	});
 
 	// IMPROBABLE-END
