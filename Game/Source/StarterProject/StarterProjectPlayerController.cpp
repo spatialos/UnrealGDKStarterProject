@@ -28,13 +28,13 @@ void AStarterProjectPlayerController::ServerTravel_Implementation(const FString&
 	UE_LOG(LogTemp, Warning, TEXT("!!SERVER TRAVEL to %s!!"), *MapName);
 
 	// Mod the URL to include a server travel option.
-	FString SnapshotOption = "?snapshot=BestMap";
-	FString ModdedMapName = MapName;
-	ModdedMapName.Append(SnapshotOption);
+	//FString SnapshotOption = "?snapshot=BestMap";
+	//FString ModdedMapName = MapName;
+	//ModdedMapName.Append(SnapshotOption);
 
 	UWorld* World = GetWorld();
 
-	World->ServerTravel(ModdedMapName, true);
+	World->ServerTravel(MapName, true);
 }
 
 bool AStarterProjectPlayerController::ServerTravel_Validate(const FString& MapName)
