@@ -12,6 +12,8 @@
 #include "StarterProjectGameStateBase.h"
 #include "SpatialNetDriver.h"
 
+#include "Interactable.h"
+
 #include "UnrealNetwork.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -46,10 +48,10 @@ AStarterProjectCharacter::AStarterProjectCharacter()
 												// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
+// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
 
 void AStarterProjectCharacter::BeginPlay()
@@ -77,6 +79,8 @@ void AStarterProjectCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAxis("TurnRate", this, &AStarterProjectCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AStarterProjectCharacter::LookUpAtRate);
+
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AStarterProjectCharacter::Interact);
 
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AStarterProjectCharacter::TouchStarted);
@@ -131,6 +135,42 @@ void AStarterProjectCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+bool AStarterProjectCharacter::ServerInteract_Validate(AActor* Target)
+{
+	return true;
+}
+
+void AStarterProjectCharacter::ServerInteract_Implementation(AActor* Target)
+{
+	if (Target->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+	{
+		IInteractable::Execute_Interact(Target);
+	}
+}
+
+void AStarterProjectCharacter::Interact()
+{
+	FCollisionQueryParams TraceParams(FName(TEXT("SP_Trace")), true, this);
+	TraceParams.bTraceComplex = true;
+	TraceParams.bReturnPhysicalMaterial = false;
+
+	FHitResult HitResult(ForceInit);
+
+	FVector TraceDirection = GetFollowCamera()->GetForwardVector();
+	FVector StartPosition = GetFollowCamera()->GetComponentLocation() + (TraceDirection * 30.0f);
+	const float kTraceLength = 5000.0f;
+	FVector EndPosition = StartPosition + (TraceDirection * kTraceLength);
+
+	bool bDidHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartPosition, EndPosition, ECC_WorldDynamic, TraceParams);
+	if (bDidHit && HitResult.Actor != nullptr)
+	{
+		if (HitResult.Actor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
+		{
+			ServerInteract(HitResult.Actor.Get());
+		}
 	}
 }
 

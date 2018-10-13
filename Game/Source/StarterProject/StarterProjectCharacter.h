@@ -63,6 +63,9 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerInteract(AActor* Target);
+
 	void Interact();
 
 	UFUNCTION(Server, Reliable, WithValidation)
