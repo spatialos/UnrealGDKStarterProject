@@ -131,6 +131,7 @@ void AStarterProjectCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+		TestRPC();
 	}
 }
 
@@ -151,5 +152,18 @@ bool AStarterProjectCharacter::TestRPC_Validate()
 
 void AStarterProjectCharacter::TestRPC_Implementation()
 {
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnInfo.bNoFail = true;
+	AStarterProjectCharacter* NewChar = GetWorld()->SpawnActor<AStarterProjectCharacter>(FVector(50, 50, 50), FRotator::ZeroRotator, SpawnInfo);
+	Characters.Add(NewChar);
+	AStarterProjectCharacter* OtherChar = GetWorld()->SpawnActor<AStarterProjectCharacter>(FVector(55, 55, 55), FRotator::ZeroRotator, SpawnInfo);
+	Characters.Add(OtherChar);
+}
 
+void AStarterProjectCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(AStarterProjectCharacter, Characters, COND_None);
 }

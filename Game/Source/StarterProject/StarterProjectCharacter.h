@@ -32,6 +32,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 protected:
 
 	/** Called for forwards/backward input */
@@ -70,6 +72,9 @@ protected:
 
 	UFUNCTION(NetMulticast, Unreliable, WithValidation)
 	void TestMulticast();
+
+	UPROPERTY(Replicated)
+	TArray<AStarterProjectCharacter*> Characters;
 
 public:
 	/** Returns CameraBoom subobject **/
