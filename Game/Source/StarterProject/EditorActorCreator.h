@@ -29,6 +29,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Actor Creator")
 	void ClearActors();
 
+	UFUNCTION(BlueprintCallable, Category = "Actor Creator")
+	void CreateSublevels();
+
+	UPROPERTY(VisibleAnywhere, Category = "Actor Creator")
+	class UWorld* GeneratedWorld;
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Actor Creator")
 	TSubclassOf<AActor> ActorTemplate;

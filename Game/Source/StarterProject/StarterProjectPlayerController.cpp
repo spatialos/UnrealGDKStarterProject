@@ -23,6 +23,11 @@ void AStarterProjectPlayerController::TestMulticast_Implementation()
 {
 }
 
+void AStarterProjectPlayerController::DoClientTravel(FString URLString)
+{
+	ClientTravel(URLString, ETravelType::TRAVEL_Absolute, false);
+}
+
 void AStarterProjectPlayerController::InitPlayerState()
 {
 	// TODO: this is a workaround until we can query a replicated UObject*'s UnrealObjRef - UNR-407

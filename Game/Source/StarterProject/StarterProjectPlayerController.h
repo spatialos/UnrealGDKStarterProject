@@ -20,6 +20,9 @@ class STARTERPROJECT_API AStarterProjectPlayerController : public APlayerControl
 	UFUNCTION(NetMulticast, Unreliable, WithValidation)
 	void TestMulticast();
 
+	UFUNCTION(BlueprintCallable)
+	void DoClientTravel(FString URLString);
+
 public:
 
 	virtual void InitPlayerState() override;
