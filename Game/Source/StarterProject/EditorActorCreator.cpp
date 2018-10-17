@@ -2,6 +2,7 @@
 
 #include "EditorActorCreator.h"
 
+#include "AssetRegistryModule.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
 
@@ -66,5 +67,24 @@ void AEditorActorCreator::ClearActors()
 		}
 	}
 	CreatedActors.Empty();
+}
+
+void AEditorActorCreator::CreateSublevels()
+{
+	if (GeneratedWorld == nullptr)
+	{
+		FString PackagePath = FString("/Game/GeneratedLevel");
+		UPackage* Package = CreatePackage(nullptr, *PackagePath);
+
+		FString AssetName = FString("GeneratedLevel");
+		GeneratedWorld = UWorld::CreateWorld(EWorldType::Editor, true, FName(*AssetName), Package);
+		FAssetRegistryModule::AssetCreated(GeneratedWorld);
+		GeneratedWorld->MarkPackageDirty();
+
+		FString FilePath = FPackageName::LongPackageNameToFilename(PackagePath, FPackageName::GetAssetPackageExtension());
+		bool bSuccess = UPackage::SavePackage(Package, GeneratedWorld, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone, *FilePath);
+
+		UE_LOG(LogTemp, Log, TEXT("Saved asset: %s %s"), *FilePath, bSuccess ? TEXT("Success") : TEXT("Failure"));
+	}
 }
 
