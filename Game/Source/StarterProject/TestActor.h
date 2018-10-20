@@ -31,6 +31,9 @@ public:
 	UPROPERTY(EditAnywhere, Replicated)
 	int32 TestInt;
 
+	UPROPERTY(EditAnywhere)
+	FString InitialDataStringCPP;
+
 	bool bHasRun = false;
 
 private:
