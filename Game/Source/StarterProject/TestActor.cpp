@@ -25,9 +25,12 @@ void ATestActor::BeginPlay()
 	Super::BeginPlay();
 	
 	FString WorkerId;
-	if (GetNetDriver())
+	if (USpatialNetDriver* SpatialNetDriver = Cast<USpatialNetDriver>(GetNetDriver()))
 	{
-		WorkerId = Cast<USpatialNetDriver>(GetNetDriver())->Connection->GetWorkerId();
+		if (SpatialNetDriver->Connection)
+		{
+			//WorkerId = SpatialNetDriver->Connection->GetWorkerId();
+		}
 	}
 	UE_LOG(LogTemp, Log, TEXT("DAVEDEBUG %s ATestActor BeginPlay %s %d"), *WorkerId, *TestString, TestInt);
 }
@@ -49,9 +52,12 @@ void ATestActor::Tick(float DeltaTime)
 	{
 		bHasRun = true;
 		FString WorkerId;
-		if (GetNetDriver())
+		if (USpatialNetDriver* SpatialNetDriver = Cast<USpatialNetDriver>(GetNetDriver()))
 		{
-			WorkerId = Cast<USpatialNetDriver>(GetNetDriver())->Connection->GetWorkerId();
+			if (SpatialNetDriver->Connection)
+			{
+				//WorkerId = SpatialNetDriver->Connection->GetWorkerId();
+			}
 		}
 		UE_LOG(LogTemp, Log, TEXT("DAVEDEBUG %s ATestActor first Tick %s %d"), *WorkerId, *TestString, TestInt);
 	}
