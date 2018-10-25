@@ -37,14 +37,9 @@
       },
       {
         "global_component_streaming_query": {
-          "component_name": "improbable.unreal.generated.starterprojectgamestatebase.StarterProjectGameStateBaseMultiClientRepData"
+          "component_name": "improbable.unreal.Singleton"
         }
-      },
-	  {
-		"global_component_streaming_query": {
-		  "component_name": "improbable.unreal.generated.starterprojectgamemode.StarterProjectGameModeMultiClientRepData"
-		}
-	  }
+      }
     ],
     "component_delivery": {
       "default": "RELIABLE_ORDERED",
