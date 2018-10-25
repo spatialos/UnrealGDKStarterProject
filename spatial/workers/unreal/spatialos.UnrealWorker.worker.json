@@ -40,7 +40,6 @@
           "component_name": "improbable.unreal.Singleton"
         }
       }
-	  }
     ],
     "component_delivery": {
       "default": "RELIABLE_ORDERED",
