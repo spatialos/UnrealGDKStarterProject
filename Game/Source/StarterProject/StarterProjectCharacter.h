@@ -74,6 +74,11 @@ protected:
 	UFUNCTION(NetMulticast, Unreliable, WithValidation)
 	void TestMulticast();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Testing")
+	FString PackageToLoad;
+	UPROPERTY(EditDefaultsOnly, Category = "Testing")
+	FString AssetToLoad;
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

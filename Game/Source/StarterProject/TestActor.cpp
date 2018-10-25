@@ -4,6 +4,8 @@
 
 #include "SpatialNetDriver.h"
 #include "SpatialWorkerConnection.h"
+#include "TestActorComponent.h"
+#include "TestSceneComponent.h"
 #include "UnrealNetwork.h"
 
 
@@ -17,6 +19,11 @@ ATestActor::ATestActor()
 
 	MyRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(MyRootComponent);
+
+	TestSceneComponent = CreateDefaultSubobject<UTestSceneComponent>(TEXT("TestSceneComponent"));
+	TestSceneComponent->SetupAttachment(MyRootComponent);
+
+	TestActorComponent = CreateDefaultSubobject<UTestActorComponent>(TEXT("TestActorComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -33,12 +40,18 @@ void ATestActor::BeginPlay()
 		}
 	}
 	UE_LOG(LogTemp, Log, TEXT("DAVEDEBUG %s ATestActor BeginPlay %s %d"), *WorkerId, *TestString, TestInt);
+
+	if (HasAuthority())
+	{
+		OnRepTestString = TEXT("New string");
+	}
 }
 
 void ATestActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(ATestActor, OnRepTestString);
 	DOREPLIFETIME(ATestActor, TestString);
 	DOREPLIFETIME(ATestActor, TestInt);
 }
@@ -61,5 +74,10 @@ void ATestActor::Tick(float DeltaTime)
 		}
 		UE_LOG(LogTemp, Log, TEXT("DAVEDEBUG %s ATestActor first Tick %s %d"), *WorkerId, *TestString, TestInt);
 	}
+}
+
+void ATestActor::OnRep_OnRepTestString()
+{
+	UE_LOG(LogTemp, Log, TEXT("REPLICATED DEBUG %s"), *OnRepTestString);
 }
 
