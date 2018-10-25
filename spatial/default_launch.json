@@ -25,8 +25,8 @@
       "snapshot_write_period_seconds": 0
     }
   },
-"load_balancing": {
-  "layer_configurations": [
+  "load_balancing": {
+    "layer_configurations": [
       {
           "layer": "UnrealWorker",
           "rectangle_grid": {
@@ -37,8 +37,8 @@
             "manual_worker_connection_only": true
         }
       }
-  ]
-},
+    ]
+  },
   "workers": [
     {
       "worker_type": "UnrealWorker",
