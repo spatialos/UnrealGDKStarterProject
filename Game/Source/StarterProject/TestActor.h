@@ -25,6 +25,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+	void OnRep_OnRepTestString();
+
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_OnRepTestString)
+	FString OnRepTestString;
+
 	UPROPERTY(EditAnywhere, Replicated)
 	FString TestString;
 
@@ -34,11 +40,19 @@ public:
 	UPROPERTY(EditAnywhere)
 	FString InitialDataStringCPP;
 
+	UPROPERTY(EditAnywhere, Replicated)
+	int32 NonReplicatedInt;
+
 	bool bHasRun = false;
 
 private:
 	UPROPERTY(VisibleAnywhere)
 	class USceneComponent* MyRootComponent;
 	
+	UPROPERTY(VisibleAnywhere)
+	class UTestSceneComponent* TestSceneComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	class UTestActorComponent* TestActorComponent;
 	
 };

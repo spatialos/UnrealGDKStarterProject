@@ -1,4 +1,5 @@
 // Copyright (c) Improbable Worlds Ltd, All Rights Reserved
+#pragma optimize("", off)
 
 #include "StarterProjectCharacter.h"
 #include "Camera/CameraComponent.h"
@@ -172,6 +173,42 @@ void AStarterProjectCharacter::Interact()
 			ServerInteract(HitResult.Actor.Get());
 		}
 	}
+
+	/*
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+	FString ContentRelativeDir(TEXT("/Game/Maps/StreamingGym"));
+	AssetRegistry.AddPath(ContentRelativeDir);
+	AssetRegistry.ScanPathsSynchronous({ ContentRelativeDir });
+
+	UObjectLibrary* Library = UObjectLibrary::CreateLibrary(UObject::StaticClass(), false, false);
+	Library->LoadAssetDataFromPath(ContentRelativeDir);
+	*/
+
+//	if (AssetToLoad.IsEmpty())
+//	{
+//		AssetToLoad = TEXT("/Game/Maps/StreamingGym/StreamingGym.StreamingGym");
+//	}
+//	UObject* FoundObject = StaticLoadObject(AActor::StaticClass(), nullptr, *AssetToLoad);
+//	if (AActor* FoundActor = Cast<AActor>(FoundObject))
+//	{
+//		FActorSpawnParameters SpawnParams;
+//		SpawnParams.Template = FoundActor;
+//		FTransform SpawnTransform = FTransform::Identity;
+//		AActor* NewActor = GetWorld()->SpawnActor(FoundActor->GetClass(), &SpawnTransform, SpawnParams);
+//		UE_LOG(LogTemp, Log, TEXT("Created new actor %s"), *NewActor->GetName());
+//	}
+
+//	if (PackageToLoad.IsEmpty())
+//	{
+//		PackageToLoad = TEXT("/Game/Maps/StreamingGym/StreamingGym");
+//	}
+
+//	UPackage* MapPackage = LoadPackage(nullptr, *PackageToLoad, LOAD_None);
+//	if (MapPackage)
+//	{
+//		//MapPackage->
+//	}
 }
 
 bool AStarterProjectCharacter::TestMulticast_Validate()
@@ -193,3 +230,5 @@ void AStarterProjectCharacter::TestRPC_Implementation()
 {
 
 }
+
+#pragma optimize("", on)
