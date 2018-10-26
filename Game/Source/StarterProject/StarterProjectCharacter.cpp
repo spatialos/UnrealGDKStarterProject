@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////
 // AStarterProjectCharacter
 
+static const FName kRightGunSocketName("GunSocket_r");
+
 AStarterProjectCharacter::AStarterProjectCharacter()
 {
 	// Set size for collision capsule
@@ -153,3 +155,121 @@ void AStarterProjectCharacter::TestRPC_Implementation()
 {
 
 }
+
+void AStarterProjectCharacter::StartFire()
+{
+    check(GetNetMode() != NM_DedicatedServer);
+
+    if (IgnoreActionInput())
+    {
+        return;
+    }
+
+    AWeapon* Weapon = GetEquippedWeapon();
+    if (Weapon != nullptr)
+    {
+        // Don't allow sprinting and shooting at the same time.
+        StopSprinting();
+
+        Weapon->StartFire();
+    }
+}
+
+void AStarterProjectCharacter::StopFire()
+{
+    check(GetNetMode() != NM_DedicatedServer);
+
+    if (IgnoreActionInput())
+    {
+        return;
+    }
+
+    AWeapon* Weapon = GetEquippedWeapon();
+    if (Weapon != nullptr)
+    {
+        Weapon->StopFire();
+    }
+}
+
+bool AStarterProjectCharacter::IgnoreActionInput() const
+{
+    check(GetNetMode() != NM_DedicatedServer);
+
+    if (AStarterProjectPlayerController* PC = Cast<AStarterProjectPlayerController>(GetController()))
+    {
+        return PC->IgnoreActionInput();
+    }
+    return false;
+}
+
+void AStarterProjectCharacter::SpawnWeapon()
+{
+    if (!HasAuthority())
+    {
+        return;
+    }
+
+    if (WeaponTemplate == nullptr)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("No starter weapon defined."));
+        return;
+    }
+
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.Owner = this;
+    AWeapon* StartWeapon =
+        GetWorld()->SpawnActor<AWeapon>(WeaponTemplate, GetActorTransform(), SpawnParams);
+    StartWeapon->SetOwningCharacter(this);
+    StartWeapon->AttachToComponent(
+        GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, kRightGunSocketName);
+
+    UE_LOG(LogTPS, Log, TEXT("Set weapon for character %s to %s"), *this->GetName(),
+           *StartWeapon->GetName());
+    EquippedWeapon = StartWeapon;
+}
+
+void AStarterProjectCharacter::UpdateAimRotation(float AngleUpdateThreshold)
+{
+    FRotator AimDelta = GetControlRotation() - GetActorRotation();
+    AimDelta.Normalize();
+    float NewAimYaw = FMath::ClampAngle(AimDelta.Yaw, -90.0f, 90.0f);
+    float NewAimPitch = FMath::ClampAngle(AimDelta.Pitch, -90.0f, 90.0f);
+
+    if (FMath::Abs(NewAimYaw - AimYaw) > AngleUpdateThreshold)
+    {
+        AimYaw = FMath::ClampAngle(AimDelta.Yaw, -90.0f, 90.0f);
+    }
+    if (FMath::Abs(NewAimPitch - AimPitch) > AngleUpdateThreshold)
+    {
+        AimPitch = FMath::ClampAngle(AimDelta.Pitch, -90.0f, 90.0f);
+    }
+}
+
+void AStarterProjectCharacter::TakeGunDamage_Implementation(float Damage, const FDamageEvent& DamageEvent)
+{
+    if (!HasAuthority())
+    {
+        return;
+    }
+
+    const AStarterProjectCharacter* Killer = nullptr;
+	    
+    int32 DamageDealt = FMath::Min(static_cast<int32>(Damage), CurrentHealth);
+    CurrentHealth -= DamageDealt;
+
+    if (CurrentHealth <= 0)
+    {
+        Die(Killer);
+    }
+}
+
+FVector AStarterProjectCharacter::GetLineTraceStart() const
+{
+    return GetFollowCamera()->GetComponentLocation();
+}
+
+FVector AStarterProjectCharacter::GetLineTraceDirection() const
+{
+    return GetFollowCamera()->GetForwardVector();
+}
+

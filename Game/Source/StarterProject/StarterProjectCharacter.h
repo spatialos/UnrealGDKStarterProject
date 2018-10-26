@@ -71,6 +71,31 @@ protected:
 	UFUNCTION(NetMulticast, Unreliable, WithValidation)
 	void TestMulticast();
 
+	// [client] If true, the character should ignore all action inputs.
+    bool IgnoreActionInput() const;
+    
+    // [server] Spawns a starter weapon and attaches it to the character.
+    void SpawnWeapon();
+
+    // [server] Tells this player that it's time to die.
+    // @param Killer  The player who killed me. Can be null if it wasn't a player who dealt the
+    // damage that killed me.
+    void Die(const class AStarterProjectCharacter* Killer);
+
+	// Current health of the character, can be at most MaxHealth.
+    UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_CurrentHealth, Category = "Health")
+    int32 CurrentHealth;
+
+	UPROPERTY(VisibleAnywhere, Replicated)
+    class AStarterProjectWeapon* EquippedWeapon;
+	
+	UFUNCTION()
+    void OnRep_CurrentHealth();
+
+	// Weapon to spawn the player with initially.
+    UPROPERTY(EditDefaultsOnly, Category = "Weapons")
+    TSubclassOf<class AWeapon> WeaponTemplate;
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
