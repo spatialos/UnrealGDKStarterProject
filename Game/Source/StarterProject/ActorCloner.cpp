@@ -17,6 +17,11 @@ AActorCloner::AActorCloner()
 
 void AActorCloner::Interact_Implementation()
 {
+	ServerCloneActor();
+}
+
+void AActorCloner::ServerCloneActor_Implementation()
+{
 	AActor* TemplateActor = nullptr;
 
 	if (SpawnTemplate)
@@ -36,6 +41,15 @@ void AActorCloner::Interact_Implementation()
 
 	if (TemplateActor)
 	{
+		AActor* DuplicatedActor = Cast<AActor>(StaticDuplicateObject(TemplateActor, GetWorld()->PersistentLevel));
+
+		if (!DuplicatedActor->HasActorBegunPlay())
+		{
+			DuplicatedActor->DispatchBeginPlay();
+		}
+		DuplicatedActor->UpdateOverlaps();
+		return;
+
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Template = TemplateActor;
 		SpawnParams.bDeferConstruction = true;
@@ -74,22 +88,22 @@ void AActorCloner::Interact_Implementation()
 						UProperty* Property = *PropertyIter;
 						void* Dest = Property->ContainerPtrToValuePtr<void>(Cast<UObject>(DestComponent));
 
-						if (UObjectProperty* ObjectProperty = Cast<UObjectProperty>(Property))
-						{
-							if (!ObjectProperty->IsNameStableForNetworking())
-							{
-								continue;
-							}
+						//if (UObjectProperty* ObjectProperty = Cast<UObjectProperty>(Property))
+						//{
+						//	if (!ObjectProperty->IsNameStableForNetworking())
+						//	{
+						//		continue;
+						//	}
 
-							UObject* ObjectRef = StaticFindObject(UObject::StaticClass(), nullptr, *ObjectProperty->GetName());
-							if (ObjectRef == nullptr)
-							{
-								continue;
-							}
+						//	UObject* ObjectRef = StaticFindObject(UObject::StaticClass(), nullptr, *ObjectProperty->GetName());
+						//	if (ObjectRef == nullptr)
+						//	{
+						//		continue;
+						//	}
 
-							ObjectProperty->SetObjectPropertyValue(Dest, ObjectRef);
-						}
-						else
+						//	ObjectProperty->SetObjectPropertyValue(Dest, ObjectRef);
+						//}
+						//else
 						{
 							if (//Property->IsA<UObjectProperty>() ||
 								Property->HasAnyPropertyFlags(CPF_Transient))  // ||
@@ -116,10 +130,21 @@ void AActorCloner::Interact_Implementation()
 				//NewActor->PostActorConstruction();
 			}  // FinishSpawning
 
-
+			{  // Taken from PostNetInit
+				if (!NewActor->HasActorBegunPlay())
+				{
+					NewActor->DispatchBeginPlay();
+				}
+				NewActor->UpdateOverlaps();
+			}  // PostNetInit
 
 		}
 	}
+}
+
+bool AActorCloner::ServerCloneActor_Validate()
+{
+	return true;
 }
 
 #pragma optimize("", on)

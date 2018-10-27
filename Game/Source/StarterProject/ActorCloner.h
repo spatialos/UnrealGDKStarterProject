@@ -22,6 +22,9 @@ public:
 
 	virtual void Interact_Implementation() override;
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerCloneActor();
+
 	UPROPERTY(Handover, EditAnywhere, Category = "Spawner")
 	class AActor* SpawnTemplate;
 
