@@ -69,6 +69,14 @@ protected:
 	void Interact();
 
 	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerDestroyHitActor(AActor* HitActor);
+	void DestroyHitActor();
+
+	void QueryHitActor();
+
+	AActor* LineTrace() const;
+
+	UFUNCTION(Server, Reliable, WithValidation)
 	void TestRPC();
 
 	UFUNCTION(NetMulticast, Unreliable, WithValidation)

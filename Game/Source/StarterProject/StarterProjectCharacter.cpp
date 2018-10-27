@@ -11,6 +11,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SpatialNetDriver.h"
+#include "Utils/EntityRegistry.h"
 
 #include "Interactable.h"
 
@@ -81,6 +82,8 @@ void AStarterProjectCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AStarterProjectCharacter::LookUpAtRate);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AStarterProjectCharacter::Interact);
+	PlayerInputComponent->BindAction("DestroyHitActor", IE_Pressed, this, &AStarterProjectCharacter::DestroyHitActor);
+	PlayerInputComponent->BindAction("QueryHitActor", IE_Pressed, this, &AStarterProjectCharacter::QueryHitActor);
 
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AStarterProjectCharacter::TouchStarted);
@@ -153,24 +156,10 @@ void AStarterProjectCharacter::ServerInteract_Implementation(AActor* Target)
 
 void AStarterProjectCharacter::Interact()
 {
-	FCollisionQueryParams TraceParams(FName(TEXT("SP_Trace")), true, this);
-	TraceParams.bTraceComplex = true;
-	TraceParams.bReturnPhysicalMaterial = false;
-
-	FHitResult HitResult(ForceInit);
-
-	FVector TraceDirection = GetFollowCamera()->GetForwardVector();
-	FVector StartPosition = GetFollowCamera()->GetComponentLocation() + (TraceDirection * 30.0f);
-	const float kTraceLength = 5000.0f;
-	FVector EndPosition = StartPosition + (TraceDirection * kTraceLength);
-
-	bool bDidHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartPosition, EndPosition, ECC_WorldDynamic, TraceParams);
-	if (bDidHit && HitResult.Actor != nullptr)
+	AActor* HitActor = LineTrace();
+	if (HitActor && HitActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
-		if (HitResult.Actor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
-		{
-			ServerInteract(HitResult.Actor.Get());
-		}
+		ServerInteract(HitActor);
 	}
 
 	/*
@@ -208,6 +197,65 @@ void AStarterProjectCharacter::Interact()
 //	{
 //		//MapPackage->
 //	}
+}
+
+void AStarterProjectCharacter::ServerDestroyHitActor_Implementation(AActor* HitActor)
+{
+	if (HitActor && HitActor->HasAuthority() && !HitActor->IsPendingKill())
+	{
+		HitActor->Destroy();
+		UE_LOG(LogTemp, Log, TEXT("Destroying actor %s"), *HitActor->GetName());
+	}
+}
+
+bool AStarterProjectCharacter::ServerDestroyHitActor_Validate(AActor* HitActor)
+{
+	return true;
+}
+
+void AStarterProjectCharacter::DestroyHitActor()
+{
+	if (AActor* HitActor = LineTrace())
+	{
+		ServerDestroyHitActor(HitActor);
+	}
+}
+
+void AStarterProjectCharacter::QueryHitActor()
+{
+	if (AActor* HitActor = LineTrace())
+	{
+		FString Output = FString::Printf(TEXT("HitActor: %s"), *HitActor->GetFullName());
+		if (USpatialNetDriver* SpatialNetDriver = Cast<USpatialNetDriver>(GetNetDriver()))
+		{
+			if (Worker_EntityId EntityId = SpatialNetDriver->GetEntityRegistry()->GetEntityIdFromActor(HitActor))
+			{
+				Output.Append(FString::Printf(TEXT(" EntityId: %lld"), EntityId));
+			}
+		}
+		UE_LOG(LogTemp, Log, TEXT("%s"), *Output);
+	}
+}
+
+AActor* AStarterProjectCharacter::LineTrace() const
+{
+	FCollisionQueryParams TraceParams(FName(TEXT("SP_Trace")), true, this);
+	TraceParams.bTraceComplex = true;
+	TraceParams.bReturnPhysicalMaterial = false;
+
+	FHitResult HitResult(ForceInit);
+
+	FVector TraceDirection = GetFollowCamera()->GetForwardVector();
+	FVector StartPosition = GetFollowCamera()->GetComponentLocation() + (TraceDirection * 30.0f);
+	const float kTraceLength = 5000.0f;
+	FVector EndPosition = StartPosition + (TraceDirection * kTraceLength);
+
+	bool bDidHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartPosition, EndPosition, ECC_WorldDynamic, TraceParams);
+	if (bDidHit && HitResult.Actor != nullptr)
+	{
+		return HitResult.Actor.Get();
+	}
+	return nullptr;
 }
 
 bool AStarterProjectCharacter::TestMulticast_Validate()
