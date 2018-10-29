@@ -1,6 +1,7 @@
 // Copyright (c) Improbable Worlds Ltd, All Rights Reserved
 
 #include "StarterProjectPlayerController.h"
+#include "StarterProjectGameMode.h"
 #include "SpatialNetDriver.h"
 #include "EntityRegistry.h"
 
@@ -51,7 +52,7 @@ void AStarterProjectPlayerController::InitPlayerState()
 	Super::InitPlayerState();
 }
 
-void AStarterProjectPlayerController::KillCharacter(const ATPSCharacter* Killer)
+void AStarterProjectPlayerController::KillCharacter()
 {
 	check(GetNetMode() == NM_DedicatedServer);
 
@@ -65,8 +66,8 @@ void AStarterProjectPlayerController::KillCharacter(const ATPSCharacter* Killer)
 	UnPossess();
 
 	// TODO: timers won't persist across worker boundary migrations, and neither will PawnToDelete
-	GetWorldTimerManager().SetTimer(DeleteCharacterTimerHandle, this, &ATPSPlayerController::DeleteCharacter, DeleteCharacterDelay);
-	GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &ATPSPlayerController::RespawnCharacter, RespawnCharacterDelay);
+	GetWorldTimerManager().SetTimer(DeleteCharacterTimerHandle, this, &AStarterProjectPlayerController::DeleteCharacter, DeleteCharacterDelay);
+	GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &AStarterProjectPlayerController::RespawnCharacter, RespawnCharacterDelay);
 }
 
 void AStarterProjectPlayerController::RespawnCharacter()

@@ -4,6 +4,7 @@
 
 #include "StarterProjectCharacter.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 #include "UnrealNetwork.h"
 
 
@@ -21,6 +22,12 @@ AStarterProjectWeapon::AStarterProjectWeapon()
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	Mesh->SetupAttachment(RootComponent);
+	
+	MaxRange = 50000.0f;
+	ShotBaseDamage = 10.0f;
+	HitValidationTolerance = 50.0f;
+	DamageTypeClass = UDamageType::StaticClass();  // generic damage type
+	HitFXTemplate = nullptr;
 }
 
 AStarterProjectCharacter* AStarterProjectWeapon::GetOwningCharacter() const
@@ -64,7 +71,7 @@ void AStarterProjectWeapon::DoFire()
 
 bool AStarterProjectWeapon::DoLineTrace(FInstantHitInfo& OutHitInfo)
 {
-	if (!GetOwningCharacter() == nullptr)
+	if (OwningCharacter == nullptr)
 	{
 		return false;
 	}
@@ -74,16 +81,12 @@ bool AStarterProjectWeapon::DoLineTrace(FInstantHitInfo& OutHitInfo)
     TraceParams.bTraceAsyncScene = true;
     TraceParams.bReturnPhysicalMaterial = false;
     TraceParams.AddIgnoredActor(this);
-    TraceParams.AddIgnoredActor(Character);
+    TraceParams.AddIgnoredActor(OwningCharacter);
 
-    if (bDrawDebugLineTrace)
-    {
-        TraceParams.TraceTag = kTraceTag;
-    }
-
+    
     FHitResult HitResult(ForceInit);
-    FVector TraceStart = Character->GetLineTraceStart();
-    FVector TraceEnd = TraceStart + Character->GetLineTraceDirection() * MaxRange;
+    FVector TraceStart = OwningCharacter->GetLineTraceStart();
+    FVector TraceEnd = TraceStart + OwningCharacter->GetLineTraceDirection() * MaxRange;
 
     bool bDidHit = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd,
                                                         ECC_WorldStatic, TraceParams);
@@ -152,11 +155,15 @@ bool AStarterProjectWeapon::ValidateHit(const FInstantHitInfo& HitInfo)
 
 void AStarterProjectWeapon::DealDamage(const FInstantHitInfo& HitInfo)
 {
+	if (OwningCharacter == nullptr)
+	{
+		return;
+	}
     FPointDamageEvent DmgEvent;
     DmgEvent.DamageTypeClass = DamageTypeClass;
     DmgEvent.HitInfo.ImpactPoint = HitInfo.Location;
 
-    HitInfo.HitActor->TakeDamage(ShotBaseDamage, DmgEvent, GetOwningCharacter()->GetController(),
+    HitInfo.HitActor->TakeDamage(ShotBaseDamage, DmgEvent, OwningCharacter->GetController(),
                                  this);
 }
 
@@ -191,6 +198,22 @@ void AStarterProjectWeapon::ServerDidHit_Implementation(const FInstantHitInfo& H
     {
         NotifyClientsOfHit(HitInfo);
     }
+}
+
+void AStarterProjectWeapon::StartFire()
+{
+	check(GetNetMode() == NM_Client);
+
+	float Now = UGameplayStatics::GetRealTimeSeconds(GetWorld());
+	if (GetWeaponState() == EWeaponState::Idle)
+	{
+		SetWeaponState(EWeaponState::Firing);
+				
+		// Fire a shot right away.
+		DoFire();
+
+		StopFiring();		
+	}
 }
 
 void AStarterProjectWeapon::StopFiring()

@@ -10,6 +10,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "StarterProjectGameStateBase.h"
+#include "StarterProjectPlayerController.h"
+#include "StarterProjectWeapon.h"
 #include "SpatialNetDriver.h"
 
 #include "UnrealNetwork.h"
@@ -131,9 +133,8 @@ void AStarterProjectCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AStarterProjectCharacter::LookUpAtRate);
 
-	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &AStarterProjectCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &AStarterProjectCharacter::TouchStopped);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AStarterProjectCharacter::StartFire);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AStarterProjectCharacter::StopFire);
 }
 
 void AStarterProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
@@ -223,19 +224,8 @@ void AStarterProjectCharacter::StopFire()
 
     if (EquippedWeapon != nullptr)
     {
-		EquippedWeapon->StopFire();
+		EquippedWeapon->StopFiring();
     }
-}
-
-bool AStarterProjectCharacter::IgnoreActionInput() const
-{
-    check(GetNetMode() != NM_DedicatedServer);
-
-    if (AStarterProjectPlayerController* PC = Cast<AStarterProjectPlayerController>(GetController()))
-    {
-        return PC->IgnoreActionInput();
-    }
-    return false;
 }
 
 void AStarterProjectCharacter::SpawnWeapon()
@@ -276,21 +266,19 @@ void AStarterProjectCharacter::UpdateAimRotation(float AngleUpdateThreshold)
     }
 }
 
-void AStarterProjectCharacter::TakeGunDamage_Implementation(float Damage, const FDamageEvent& DamageEvent)
+void AStarterProjectCharacter::TakeGunDamage_Implementation(float Damage, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
     if (!HasAuthority())
     {
         return;
     }
-
-    const AStarterProjectCharacter* Killer = nullptr;
 	    
     int32 DamageDealt = FMath::Min(static_cast<int32>(Damage), CurrentHealth);
     CurrentHealth -= DamageDealt;
 
     if (CurrentHealth <= 0)
     {
-        Die(Killer);
+        Die();
     }
 }
 
@@ -304,14 +292,14 @@ FVector AStarterProjectCharacter::GetLineTraceDirection() const
     return GetFollowCamera()->GetForwardVector();
 }
 
-void AStarterProjectCharacter::Die(const AStarterProjectCharacter* Killer)
+void AStarterProjectCharacter::Die()
 {
 	if (GetNetMode() == NM_DedicatedServer && HasAuthority())
 	{
-		ATPSPlayerController* PC = Cast<ATPSPlayerController>(GetController());
+		AStarterProjectPlayerController* PC = Cast<AStarterProjectPlayerController>(GetController());
 		if (PC)
 		{
-			PC->KillCharacter(Killer);
+			PC->KillCharacter();
 		}
 
 		// Destroy weapon actor if there is one.
@@ -322,5 +310,80 @@ void AStarterProjectCharacter::Die(const AStarterProjectCharacter* Killer)
 
 		bIsRagdoll = true;
 		OnRep_IsRagdoll();
+	}
+}
+
+void AStarterProjectCharacter::OnRep_IsRagdoll()
+{
+	if (bIsRagdoll)
+	{
+		StartRagdoll();
+	}
+}
+
+void AStarterProjectCharacter::StartRagdoll()
+{
+	// Disable capsule collision and disable movement.
+	UCapsuleComponent* CapsuleComponent = GetCapsuleComponent();
+	if (CapsuleComponent == nullptr)
+	{
+		return;
+	}
+	CapsuleComponent->SetSimulatePhysics(false);
+	CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->DisableMovement();
+
+	// Enable mesh collision and physics.
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	MeshComponent->SetCollisionProfileName(FName(TEXT("Ragdoll")));
+	MeshComponent->SetSimulatePhysics(true);
+
+	// Gather list of child components of the capsule.
+	TArray<USceneComponent*> ComponentsToMove;
+	int NumChildren = CapsuleComponent->GetNumChildrenComponents();
+	for (int i = 0; i < NumChildren; ++i)
+	{
+		USceneComponent* Component = CapsuleComponent->GetChildComponent(i);
+		if (Component != nullptr && Component != MeshComponent)
+		{
+			ComponentsToMove.Add(Component);
+		}
+	}
+
+	SetRootComponent(MeshComponent);
+
+	// Move the capsule's former child components over to the mesh.
+	for (USceneComponent* Component : ComponentsToMove)
+	{
+		Component->AttachToComponent(MeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	}
+
+	// Fix up the camera to a "death view".
+	if (GetNetMode() == NM_Client)
+	{
+		USpringArmComponent* CameraBoom = GetCameraBoom();
+
+		// Enable lag on the spring arm to smooth movement, counters sporadic movement of the ragdoll.
+		CameraBoom->bEnableCameraLag = true;
+		CameraBoom->bEnableCameraRotationLag = true;
+		// Change the camera boom so it's looking down on the ragdoll from slightly further away.
+		CameraBoom->bUsePawnControlRotation = false;
+		CameraBoom->bInheritPitch = false;
+		CameraBoom->bInheritRoll = false;
+		CameraBoom->bInheritYaw = false;
+		CameraBoom->SocketOffset = FVector::ZeroVector;  // Zero out the over-the-shoulder offset.
+		CameraBoom->TargetOffset = FVector(0, 0, 50);  // Offset slightly up so the camera target doesn't collide with the floor.
+		CameraBoom->SetRelativeLocation(FVector(0, 0, 97));  // Places it at the character mesh's root bone.
+		CameraBoom->SetRelativeRotation(FRotator(300, 0, 0));  // Look down on the character.
+		CameraBoom->TargetArmLength = 500;  // Extend the arm length slightly.
+	}
+}
+
+void AStarterProjectCharacter::OnRep_CurrentHealth()
+{
+	if (GetNetMode() != NM_DedicatedServer)
+	{
+		// Update health UI here
 	}
 }

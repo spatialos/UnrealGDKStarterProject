@@ -16,15 +16,29 @@ class STARTERPROJECT_API AStarterProjectPlayerController : public APlayerControl
 
 	AStarterProjectPlayerController();
 
+	virtual void Tick(float DeltaSeconds) override;
+
 	UFUNCTION(Server, Reliable, WithValidation)
 	void TestRPC();
 
 	UFUNCTION(NetMulticast, Unreliable, WithValidation)
 	void TestMulticast();
 
+	// Overrides AController::SetPawn, which should be called on the client and server whenever the controller
+	// possesses (or unpossesses) a pawn.
+	//virtual void SetPawn(APawn* InPawn) override;
 public:
 
 	virtual void InitPlayerState() override;
+
+	// [server] Tells the controller that it's time for the player to die, and sets up conditions for respawn.
+	void KillCharacter();
+
+	// [server] Causes the character to respawn.
+	void RespawnCharacter();
+
+	// [server] Deletes the character.
+	void DeleteCharacter();
 
 protected:
 	// Character respawn delay, in seconds.
