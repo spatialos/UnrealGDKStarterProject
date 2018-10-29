@@ -21,6 +21,7 @@ For more information, see the [SpatialOS GDK for Unreal documentation](https://d
 The GDK and its starter projects are available on GitHub.
 * [GDK: github.com/spatialos/UnrealGDK](https://github.com/spatialos/UnrealGDK)
 * [The SpatialOS Unreal Engine](https://github.com/improbableio/UnrealEngine/tree/4.20-SpatialOSUnrealGDK)
+**NOTE:** This link may give you a 404.
 * [Starter Project](https://github.com/spatialos/UnrealGDKStarterProject)
 * [Third-Person Shooter Game](https://github.com/spatialos/UnrealGDKThirdPersonShooter) (Not actively developed)
 * [The Test Suite](https://github.com/spatialos/UnrealGDKTestSuite)
