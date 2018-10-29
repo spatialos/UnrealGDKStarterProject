@@ -4,6 +4,14 @@
 #include "SpatialNetDriver.h"
 #include "EntityRegistry.h"
 
+AStarterProjectPlayerController::AStarterProjectPlayerController()
+	: RespawnCharacterDelay(5.0f)
+	, DeleteCharacterDelay(15.0f)
+	, PawnToDelete(nullptr)
+{
+
+}
+
 bool AStarterProjectPlayerController::TestRPC_Validate()
 {
 	return true;
@@ -41,4 +49,49 @@ void AStarterProjectPlayerController::InitPlayerState()
 	}
 
 	Super::InitPlayerState();
+}
+
+void AStarterProjectPlayerController::KillCharacter(const ATPSCharacter* Killer)
+{
+	check(GetNetMode() == NM_DedicatedServer);
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+	
+	PawnToDelete = GetPawn();
+	DeadPawnTransform = PawnToDelete->GetActorTransform();
+	UnPossess();
+
+	// TODO: timers won't persist across worker boundary migrations, and neither will PawnToDelete
+	GetWorldTimerManager().SetTimer(DeleteCharacterTimerHandle, this, &ATPSPlayerController::DeleteCharacter, DeleteCharacterDelay);
+	GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &ATPSPlayerController::RespawnCharacter, RespawnCharacterDelay);
+}
+
+void AStarterProjectPlayerController::RespawnCharacter()
+{
+	check(GetNetMode() == NM_DedicatedServer);
+	if (AGameModeBase* GameMode = GetWorld()->GetAuthGameMode())
+	{
+		APawn* NewPawn = GameMode->SpawnDefaultPawnAtTransform(this, DeadPawnTransform);
+
+		Possess(NewPawn);
+	}
+}
+
+void AStarterProjectPlayerController::DeleteCharacter()
+{
+	check(GetNetMode() == NM_DedicatedServer);
+	if (PawnToDelete != nullptr)
+	{
+		// TODO: what if the character is on a different worker?
+		GetWorld()->DestroyActor(PawnToDelete);
+		PawnToDelete = nullptr;
+	}
+}
+
+void AStarterProjectPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);	
 }

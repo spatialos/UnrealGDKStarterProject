@@ -83,14 +83,37 @@ protected:
     void Die(const class AStarterProjectCharacter* Killer);
 
 	// Current health of the character, can be at most MaxHealth.
-    UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_CurrentHealth, Category = "Health")
+    UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth)
     int32 CurrentHealth;
+
+	UPROPERTY(Replicated)
+	float AimYaw;
+
+	UPROPERTY(Replicated)
+	float AimPitch;
+
+	// Max health this character can have.
+	UPROPERTY(EditDefaultsOnly, Category = "Health", meta = (ClampMin = "1"))
+	int32 MaxHealth;
 
 	UPROPERTY(VisibleAnywhere, Replicated)
     class AStarterProjectWeapon* EquippedWeapon;
+
+	UPROPERTY(ReplicatedUsing = OnRep_IsRagdoll)
+	bool bIsRagdoll;
 	
 	UFUNCTION()
     void OnRep_CurrentHealth();
+
+	// If the aim offset angles change more than this threshold, update our local aim offset values (only applies on the owning client).
+	// Value is in degrees.
+	UPROPERTY(EditDefaultsOnly, Category = "Aim")
+	float LocalAimUpdateThreshold;
+
+	// If the aim offset angles change more than this threshold, update our replicated aim offset values.
+	// Value is in degrees.
+	UPROPERTY(EditDefaultsOnly, Category = "Aim")
+	float RemoteAimUpdateThreshold;
 
 	// Weapon to spawn the player with initially.
     UPROPERTY(EditDefaultsOnly, Category = "Weapons")

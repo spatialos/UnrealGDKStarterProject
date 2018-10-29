@@ -52,12 +52,63 @@ AStarterProjectCharacter::AStarterProjectCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	MaxHealth = 100;
+	CurrentHealth = MaxHealth;
+	EquippedWeapon = nullptr;
+	LocalAimUpdateThreshold = 0.01f;
+	RemoteAimUpdateThreshold = 2.0f;
+	bIsRagdoll = false;
 }
 
 void AStarterProjectCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		// HACK: Short delay as a workaround for actor references potentially not being resolved when this actor gets checked out.
+		FTimerHandle TimerHandle;
+		FTimerDelegate TimerDelegate;
+		TimerDelegate.BindLambda([this]() {
+			if (EquippedWeapon == nullptr)
+			{
+				SpawnWeapon();
+			}
+		});
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.2f, false);
+
+		CurrentHealth = MaxHealth;
+	}
 }
+
+void AStarterProjectCharacter::Tick(float DeltaSeconds)
+{
+	if (Role == ROLE_Authority)
+	{
+		UpdateAimRotation(RemoteAimUpdateThreshold);
+	}
+	else if (Role == ROLE_AutonomousProxy)
+	{
+		UpdateAimRotation(LocalAimUpdateThreshold);
+	}
+}
+
+void AStarterProjectCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AStarterProjectCharacter, EquippedWeapon);
+	DOREPLIFETIME(AStarterProjectCharacter, bIsRagdoll);
+	
+	// Skip the owner here because we're updating the values locally on the owning client.
+	DOREPLIFETIME_CONDITION(AStarterProjectCharacter, AimYaw, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(AStarterProjectCharacter, AimPitch, COND_SkipOwner);
+
+	// Only replicate health to the owning client.
+	DOREPLIFETIME_CONDITION(AStarterProjectCharacter, CurrentHealth, COND_AutonomousOnly);
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -160,18 +211,9 @@ void AStarterProjectCharacter::StartFire()
 {
     check(GetNetMode() != NM_DedicatedServer);
 
-    if (IgnoreActionInput())
-    {
-        return;
-    }
-
-    AWeapon* Weapon = GetEquippedWeapon();
-    if (Weapon != nullptr)
-    {
-        // Don't allow sprinting and shooting at the same time.
-        StopSprinting();
-
-        Weapon->StartFire();
+    if (EquippedWeapon != nullptr)
+    {        
+		EquippedWeapon->StartFire();
     }
 }
 
@@ -179,15 +221,9 @@ void AStarterProjectCharacter::StopFire()
 {
     check(GetNetMode() != NM_DedicatedServer);
 
-    if (IgnoreActionInput())
+    if (EquippedWeapon != nullptr)
     {
-        return;
-    }
-
-    AWeapon* Weapon = GetEquippedWeapon();
-    if (Weapon != nullptr)
-    {
-        Weapon->StopFire();
+		EquippedWeapon->StopFire();
     }
 }
 
@@ -217,15 +253,10 @@ void AStarterProjectCharacter::SpawnWeapon()
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = this;
-    AWeapon* StartWeapon =
-        GetWorld()->SpawnActor<AWeapon>(WeaponTemplate, GetActorTransform(), SpawnParams);
-    StartWeapon->SetOwningCharacter(this);
-    StartWeapon->AttachToComponent(
-        GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, kRightGunSocketName);
-
-    UE_LOG(LogTPS, Log, TEXT("Set weapon for character %s to %s"), *this->GetName(),
-           *StartWeapon->GetName());
-    EquippedWeapon = StartWeapon;
+    EquippedWeapon = GetWorld()->SpawnActor<AStarterProjectWeapon>(WeaponTemplate, GetActorTransform(), SpawnParams);
+    EquippedWeapon->SetOwningCharacter(this);
+    EquippedWeapon->AttachToComponent(
+        GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, kRightGunSocketName);    
 }
 
 void AStarterProjectCharacter::UpdateAimRotation(float AngleUpdateThreshold)
@@ -273,3 +304,23 @@ FVector AStarterProjectCharacter::GetLineTraceDirection() const
     return GetFollowCamera()->GetForwardVector();
 }
 
+void AStarterProjectCharacter::Die(const AStarterProjectCharacter* Killer)
+{
+	if (GetNetMode() == NM_DedicatedServer && HasAuthority())
+	{
+		ATPSPlayerController* PC = Cast<ATPSPlayerController>(GetController());
+		if (PC)
+		{
+			PC->KillCharacter(Killer);
+		}
+
+		// Destroy weapon actor if there is one.
+		if (EquippedWeapon != nullptr && !EquippedWeapon->IsPendingKill())
+		{
+			GetWorld()->DestroyActor(EquippedWeapon);
+		}
+
+		bIsRagdoll = true;
+		OnRep_IsRagdoll();
+	}
+}
