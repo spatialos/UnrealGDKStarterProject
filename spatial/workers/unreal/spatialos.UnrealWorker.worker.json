@@ -32,19 +32,14 @@
     "streaming_query": [
       {
         "global_component_streaming_query": {
-          "component_name": "improbable.unreal.GlobalStateManager"
+          "component_name": "unreal.GlobalStateManager"
         }
       },
       {
         "global_component_streaming_query": {
-          "component_name": "improbable.unreal.generated.starterprojectgamestatebase.StarterProjectGameStateBaseMultiClientRepData"
+          "component_name": "unreal.Singleton"
         }
-      },
-	  {
-		"global_component_streaming_query": {
-		  "component_name": "improbable.unreal.generated.starterprojectgamemode.StarterProjectGameModeMultiClientRepData"
-		}
-	  }
+      }
     ],
     "component_delivery": {
       "default": "RELIABLE_ORDERED",
@@ -69,7 +64,7 @@
         "UnrealWorker",
         "+appName",
         "${IMPROBABLE_PROJECT_NAME}",
-        "+receptionistIp",
+        "+receptionistHost",
         "${IMPROBABLE_RECEPTIONIST_HOST}",
         "+receptionistPort",
         "${IMPROBABLE_RECEPTIONIST_PORT}",
@@ -92,7 +87,7 @@
         "ThirdPersonExampleMap",
         "+appName",
         "${IMPROBABLE_PROJECT_NAME}",
-        "+receptionistIp",
+        "+receptionistHost",
         "${IMPROBABLE_RECEPTIONIST_HOST}",
         "+receptionistPort",
         "${IMPROBABLE_RECEPTIONIST_PORT}",
