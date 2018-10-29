@@ -17,7 +17,7 @@ For more information, see the [SpatialOS GDK for Unreal documentation](https://d
 | `LaunchSpatial.bat` | Launches a SpatialOS deployment with default launch config (found in `spatial/default_launch.json`) |
 | `ProjectPaths.bat` | Used by the `LaunchClient.bat`, `LaunchServer.bat` and `LaunchSpatial.bat` to specify the project environment when those scripts are run |
 
-#### Where to get the GDK and example projects
+#### Where to get the GDK and related projects
 The GDK and its starter projects are available on GitHub.
 * [GDK: github.com/spatialos/UnrealGDK](https://github.com/spatialos/UnrealGDK)
 * [The SpatialOS Unreal Engine](https://github.com/improbableio/UnrealEngine/tree/4.20-SpatialOSUnrealGDK)
