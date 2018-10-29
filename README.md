@@ -7,7 +7,7 @@ This Starter Project is both a reference project and a starting point for buildi
 
 For setup instructions, follow the [Get started](https://docs.improbable.io/unreal/latest/get-started/introduction) guide in the GDK for Unreal documentation.
 
-For more information, see the [SpatialOS GDK for Unreal documentation]((https://docs.improbable.io/unreal/latest/).
+For more information, see the [SpatialOS GDK for Unreal documentation](https://docs.improbable.io/unreal/latest/).
 
 #### Helper scripts
 | Helper script  | Description |
