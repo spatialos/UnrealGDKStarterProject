@@ -41,26 +41,11 @@ bool AStarterProjectPlayerController::ServerTravel_Validate(const FString& MapNa
 {
 	UWorld* World = GetWorld();
 	USpatialNetDriver* NetDriver = Cast<USpatialNetDriver>(World->GetNetDriver());
-	bool isServer = NetDriver->IsServer();
-	return isServer;
-}
-
-void AStarterProjectPlayerController::InitPlayerState()
-{
-	// TODO: this is a workaround until we can query a replicated UObject*'s UnrealObjRef - UNR-407
-	UWorld* World = GetWorld();
-	check(World);
-	USpatialNetDriver* NetDriver = Cast<USpatialNetDriver>(World->GetNetDriver());
 	if (NetDriver)
 	{
-		const Worker_EntityId EntityId = NetDriver->GetEntityRegistry()->GetEntityIdFromActor(this);
-		UE_LOG(LogTemp, Log, TEXT("PC:InitPlayerState called with entity id %lld"), EntityId);
-		if (EntityId != 0)
-		{
-			// EntityId is not 0, which means that this PC has already been initialized.
-			return;
-		}
+		bool isServer = NetDriver->IsServer();
+		return isServer;
 	}
 
-	Super::InitPlayerState();
+	return false;
 }
