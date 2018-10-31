@@ -27,6 +27,13 @@ void AInteractableCube::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(AInteractableCube, bUseOtherMaterial);
 }
 
+void AInteractableCube::BeginPlay()
+{
+	Super::BeginPlay();
+
+	OnRep_UseOtherMaterial();
+}
+
 void AInteractableCube::Interact_Implementation()
 {
 	ServerSwapMaterials();

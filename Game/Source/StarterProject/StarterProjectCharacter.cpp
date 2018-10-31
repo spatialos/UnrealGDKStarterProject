@@ -207,6 +207,7 @@ void AStarterProjectCharacter::ServerDestroyHitActor_Implementation(AActor* HitA
 		HitActor->Destroy();
 		UE_LOG(LogTemp, Log, TEXT("Destroying actor %s"), *HitActor->GetName());
 	}
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 }
 
 bool AStarterProjectCharacter::ServerDestroyHitActor_Validate(AActor* HitActor)
@@ -222,20 +223,41 @@ void AStarterProjectCharacter::DestroyHitActor()
 	}
 }
 
+void AStarterProjectCharacter::ServerQueryHitActor_Implementation(AActor* HitActor)
+{
+	QueryActor(HitActor);
+}
+
+bool AStarterProjectCharacter::ServerQueryHitActor_Validate(AActor* HitActor)
+{
+	return true;
+}
+
 void AStarterProjectCharacter::QueryHitActor()
 {
+	check(!HasAuthority());
+
 	if (AActor* HitActor = LineTrace())
 	{
-		FString Output = FString::Printf(TEXT("HitActor: %s"), *HitActor->GetFullName());
-		if (USpatialNetDriver* SpatialNetDriver = Cast<USpatialNetDriver>(GetNetDriver()))
-		{
-			if (Worker_EntityId EntityId = SpatialNetDriver->GetEntityRegistry()->GetEntityIdFromActor(HitActor))
-			{
-				Output.Append(FString::Printf(TEXT(" EntityId: %lld"), EntityId));
-			}
-		}
-		UE_LOG(LogTemp, Log, TEXT("%s"), *Output);
+		ServerQueryHitActor(HitActor);
+		QueryActor(HitActor);
 	}
+}
+
+void AStarterProjectCharacter::QueryActor(AActor* Actor)
+{
+	if (Actor == nullptr) return;
+
+	FString Output = FString::Printf(TEXT("HitActor (%s): %s"), HasAuthority() ? TEXT("Server") : TEXT("Client"), *Actor->GetFullName());
+	if (USpatialNetDriver* SpatialNetDriver = Cast<USpatialNetDriver>(GetNetDriver()))
+	{
+		if (Worker_EntityId EntityId = SpatialNetDriver->GetEntityRegistry()->GetEntityIdFromActor(Actor))
+		{
+			Output.Append(FString::Printf(TEXT("\n EntityId: %lld"), EntityId));
+		}
+	}
+	Output.Append(FString::Printf(TEXT("\n Role: %d\n Remote Role: %d"), Actor->Role.GetValue(), Actor->RemoteRole.GetValue()));
+	UE_LOG(LogTemp, Log, TEXT("%s"), *Output);
 }
 
 AActor* AStarterProjectCharacter::LineTrace() const
