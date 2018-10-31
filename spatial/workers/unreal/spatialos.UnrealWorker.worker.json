@@ -26,25 +26,20 @@
     },
     "entity_interest": {
       "range_entity_interest": {
-        "radius": 0
+        "radius": 50
       }
     },
     "streaming_query": [
       {
         "global_component_streaming_query": {
-          "component_name": "improbable.unreal.GlobalStateManager"
+          "component_name": "unreal.GlobalStateManager"
         }
       },
       {
         "global_component_streaming_query": {
-          "component_name": "improbable.unreal.generated.starterprojectgamestatebase.StarterProjectGameStateBaseMultiClientRepData"
+          "component_name": "unreal.Singleton"
         }
-      },
-	  {
-		"global_component_streaming_query": {
-		  "component_name": "improbable.unreal.generated.starterprojectgamemode.StarterProjectGameModeMultiClientRepData"
-		}
-	  }
+      }
     ],
     "component_delivery": {
       "default": "RELIABLE_ORDERED",
