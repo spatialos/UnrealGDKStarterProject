@@ -72,7 +72,10 @@ protected:
 	void ServerDestroyHitActor(AActor* HitActor);
 	void DestroyHitActor();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerQueryHitActor(AActor* HitActor);
 	void QueryHitActor();
+	void QueryActor(AActor* Actor);
 
 	AActor* LineTrace() const;
 
