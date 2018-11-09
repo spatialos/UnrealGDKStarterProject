@@ -47,13 +47,13 @@ AStarterProjectCharacter::AStarterProjectCharacter()
 	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
-												// Create a follow camera
+	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
+	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
 
 void AStarterProjectCharacter::BeginPlay()
@@ -85,6 +85,7 @@ void AStarterProjectCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AStarterProjectCharacter::Interact);
 	PlayerInputComponent->BindAction("DestroyHitActor", IE_Pressed, this, &AStarterProjectCharacter::DestroyHitActor);
 	PlayerInputComponent->BindAction("QueryHitActor", IE_Pressed, this, &AStarterProjectCharacter::QueryHitActor);
+	PlayerInputComponent->BindAction("SpawnDebugActor", IE_Pressed, this, &AStarterProjectCharacter::SpawnDebugActor);
 
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AStarterProjectCharacter::TouchStarted);
@@ -200,10 +201,49 @@ void AStarterProjectCharacter::Interact()
 //	}
 }
 
+void AStarterProjectCharacter::SpawnDebugActor()
+{
+	ServerSpawnDebugActor();
+}
+
+void AStarterProjectCharacter::ServerSpawnDebugActor_Implementation()
+{
+	if (SpawnActorTemplate == nullptr)
+	{
+		return;
+	}
+
+	FActorSpawnParameters SpawnParams;
+
+	FRotator CameraRotation = GetFollowCamera()->GetComponentRotation();
+	FVector SpawnPosition = GetActorLocation() + CameraRotation.RotateVector(SpawnActorOffset);
+
+	GetWorld()->SpawnActor<AActor>(SpawnActorTemplate, SpawnPosition, FRotator::ZeroRotator, SpawnParams);
+}
+
+bool AStarterProjectCharacter::ServerSpawnDebugActor_Validate()
+{
+	return true;
+}
+
 void AStarterProjectCharacter::ServerDestroyHitActor_Implementation(AActor* HitActor)
 {
 	if (HitActor && HitActor->HasAuthority() && !HitActor->IsPendingKill())
 	{
+		const FString ObjectBaseName = FString::Printf(TEXT("DESTROYED_%s"), *HitActor->GetName());
+
+		// We can only rename objects if we're not garbage collecting. We shouldn't be in GC at this point though.
+		if (!IsGarbageCollecting())
+		{
+			HitActor->Rename(*MakeUniqueObjectName(HitActor->GetOuter(), HitActor->GetClass(), *ObjectBaseName).ToString());
+			UE_LOG(LogTemp, Log, TEXT("Renamed actor to %s"), *HitActor->GetName());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to rename destroyed actor %s because we're garbage collecting. It might still be addressable by name."),
+				*HitActor->GetFullName());
+		}
+
 		HitActor->Destroy();
 		UE_LOG(LogTemp, Log, TEXT("Destroying actor %s"), *HitActor->GetName());
 	}

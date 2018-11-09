@@ -69,6 +69,10 @@ protected:
 	void Interact();
 
 	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerSpawnDebugActor();
+	void SpawnDebugActor();
+
+	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerDestroyHitActor(AActor* HitActor);
 	void DestroyHitActor();
 
@@ -84,6 +88,11 @@ protected:
 
 	UFUNCTION(NetMulticast, Unreliable, WithValidation)
 	void TestMulticast();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Testing")
+	TSubclassOf<AActor> SpawnActorTemplate;
+	UPROPERTY(EditDefaultsOnly, Category = "Testing")
+	FVector SpawnActorOffset;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Testing")
 	FString PackageToLoad;
