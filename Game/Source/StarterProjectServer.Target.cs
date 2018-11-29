@@ -9,5 +9,6 @@ public class StarterProjectServerTarget : TargetRules
 	{
 		Type = TargetType.Server;
 		ExtraModuleNames.Add("StarterProject");
+		ExtraModuleNames.Add("TestWorldGenerator");
 	}
 }

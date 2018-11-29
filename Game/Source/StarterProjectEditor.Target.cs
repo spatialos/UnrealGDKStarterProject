@@ -10,5 +10,6 @@ public class StarterProjectEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		ExtraModuleNames.Add("StarterProject");
 		ExtraModuleNames.Add("TestWorldGenerator");
+		ExtraModuleNames.Add("TestWorldGeneratorEditor");
 	}
 }

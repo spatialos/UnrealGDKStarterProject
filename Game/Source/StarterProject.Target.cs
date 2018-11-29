@@ -9,5 +9,6 @@ public class StarterProjectTarget : TargetRules
 	{
 		Type = TargetType.Game;
 		ExtraModuleNames.Add("StarterProject");
+		ExtraModuleNames.Add("TestWorldGenerator");
 	}
 }
