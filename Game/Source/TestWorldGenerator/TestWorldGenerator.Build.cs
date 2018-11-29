@@ -43,9 +43,7 @@ public class TestWorldGenerator : ModuleRules
                 "Slate",
                 "SlateCore",
                 "EditorStyle",
-                "MessageLog",
-                "UnrealEd",
-                "WorldBrowser"
+                "MessageLog"
             }
         );
     }

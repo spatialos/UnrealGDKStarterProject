@@ -14,6 +14,11 @@
 		},
 		{
 			"Name": "TestWorldGenerator",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "TestWorldGeneratorEditor",
 			"Type": "Editor",
 			"LoadingPhase": "PostEngineInit"
 		}
