@@ -14,6 +14,7 @@
 #include "Utils/EntityRegistry.h"
 
 #include "Interactable.h"
+#include "Interactions/InteractionManager.h"
 
 #include "UnrealNetwork.h"
 
@@ -50,6 +51,8 @@ AStarterProjectCharacter::AStarterProjectCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	InteractionManager = CreateDefaultSubobject<UInteractionManager>(TEXT("InteractionManager"));
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -157,10 +160,20 @@ void AStarterProjectCharacter::ServerInteract_Implementation(AActor* Target)
 
 void AStarterProjectCharacter::Interact()
 {
+	if (InteractionManager->IsMenuOpen())
+	{
+		InteractionManager->CloseMenu();
+		return;
+	}
+
 	AActor* HitActor = LineTrace();
 	if (HitActor && HitActor->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
 		ServerInteract(HitActor);
+	}
+	else if (InteractionManager->IsActorInteractable(HitActor))
+	{
+		InteractionManager->OpenMenu(HitActor);
 	}
 
 	/*
