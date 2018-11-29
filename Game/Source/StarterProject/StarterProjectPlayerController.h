@@ -26,4 +26,5 @@ class STARTERPROJECT_API AStarterProjectPlayerController : public APlayerControl
 public:
 
 	virtual void InitPlayerState() override;
+
 };
