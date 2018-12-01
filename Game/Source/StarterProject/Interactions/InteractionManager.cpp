@@ -3,8 +3,10 @@
 #include "Interactions/InteractionManager.h"
 
 #include "GameFramework/Character.h"
-#include "Interactions/InteractAction.h"
 #include "Net/UnrealNetwork.h"
+
+#include "Interactions/InteractAction.h"
+#include "UI/InteractMenuBase.h"
 
 
 UInteractionManager::UInteractionManager()
@@ -35,6 +37,11 @@ void UInteractionManager::OpenMenu(AActor* Target)
 		if (Menu == nullptr)
 		{
 			Menu = CreateWidget(PC, MenuData->MenuType);
+			if (!Menu->IsA(UInteractMenuBase::StaticClass()))
+			{
+				return;
+			}
+			Cast<UInteractMenuBase>(Menu)->Init(this);
 			InteractMenuCache.Add(MenuName, Menu);
 		}
 		Menu->AddToViewport(0);
@@ -60,10 +67,21 @@ void UInteractionManager::CloseMenu()
 	{
 		CurrentMenu->RemoveFromViewport();
 		CurrentMenu = nullptr;
+		TargetActor = nullptr;
 		APlayerController* PC = Cast<APlayerController>(Cast<ACharacter>(GetOwner())->GetController());
 		PC->SetInputMode(FInputModeGameOnly());
 		PC->bShowMouseCursor = false;
 	}
+}
+
+void UInteractionManager::ServerCloseMenu_Implementation()
+{
+	TargetActor = nullptr;
+}
+
+bool UInteractionManager::ServerCloseMenu_Validate()
+{
+	return true;
 }
 
 void UInteractionManager::DoAction(FName ActionName)

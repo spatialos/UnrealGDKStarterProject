@@ -1,0 +1,14 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "UI/InteractMenuBase.h"
+
+
+void UInteractMenuBase::Init(class UInteractionManager* InteractionManager)
+{
+	this->InteractionManager = InteractionManager;
+}
+
+UInteractionManager* UInteractMenuBase::GetInteractionManager() const
+{
+	return InteractionManager;
+}
