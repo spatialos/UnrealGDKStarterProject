@@ -69,6 +69,7 @@ void AActorCreator::ClearActors()
 		}
 	}
 	CreatedActors.Empty();
+	CreatedActorCount = CreatedActors.Num();
 }
 
 void AActorCreator::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -12,14 +12,14 @@ public class TestWorldGeneratorEditor : ModuleRules
         PublicIncludePaths.AddRange(
             new string[]
             {
-                "Public"
+                "TestWorldGeneratorEditor/Public"
             }
         );
 
         PrivateIncludePaths.AddRange(
             new string[]
             {
-                "Private",
+                "TestWorldGeneratorEditor/Private",
             }
         );
 

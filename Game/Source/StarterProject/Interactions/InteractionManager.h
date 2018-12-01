@@ -55,10 +55,15 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerOpenMenu(AActor* Target);
 
+	UFUNCTION(BlueprintCallable, Category = "Interactions")
 	void CloseMenu();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerCloseMenu();
 
 	bool IsMenuOpen() { return CurrentMenu != nullptr; }
 
+	UFUNCTION(BlueprintCallable, Category = "Interactions")
 	void DoAction(FName ActionName);
 
 	UFUNCTION(Server, Reliable, WithValidation)

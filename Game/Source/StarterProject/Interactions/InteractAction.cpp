@@ -5,6 +5,7 @@
 
 AInteractAction::AInteractAction()
 {
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void AInteractAction::DoAction_Implementation(AActor* Target)
