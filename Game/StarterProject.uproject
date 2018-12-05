@@ -11,13 +11,14 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"CoreUObject",
-				"UMG"
+				"UMG",
+        "TestWorldGenerator"
 			]
 		},
 		{
 			"Name": "TestWorldGenerator",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "PreDefault"
 		},
 		{
 			"Name": "TestWorldGeneratorEditor",

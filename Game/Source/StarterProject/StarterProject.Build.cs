@@ -19,6 +19,7 @@ public class StarterProject : ModuleRules
 				"OnlineSubsystemUtils",
 				"PhysXVehicles",
         "UMG",
+        "TestWorldGenerator",
 				"SpatialGDK"
 			});
 	}
