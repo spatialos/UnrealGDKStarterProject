@@ -9,20 +9,6 @@ public class TestWorldGeneratorEditor : ModuleRules
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
         bFasterWithoutUnity = true;
 
-        PublicIncludePaths.AddRange(
-            new string[]
-            {
-                "TestWorldGeneratorEditor/Public"
-            }
-        );
-
-        PrivateIncludePaths.AddRange(
-            new string[]
-            {
-                "TestWorldGeneratorEditor/Private",
-            }
-        );
-
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
