@@ -35,35 +35,35 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Actor Creator")
 	void OnRep_CreatedActorCount();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
 	TSubclassOf<AActor> ActorTemplate;
 
 	// X axis
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
 	int32 Rows;
 
 	// Y axis
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
 	int32 Columns;
 
 	// Z axis
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
 	int32 Planes;
 
 	// X axis
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
 	float Width;
 
 	// Y axis
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
 	float Depth;
 
 	// Z axis
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
 	float Height;
 
 	// Origin at which to spawn blocks. This will be the 0,0,0 corner of the spawn space relative to this actor's position.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Actor Creator")
 	FVector SpawnOffset;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Actor Creator")

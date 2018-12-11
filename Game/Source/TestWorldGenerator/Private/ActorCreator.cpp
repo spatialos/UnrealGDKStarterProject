@@ -32,9 +32,9 @@ void AActorCreator::CreateActors()
 {
 	UE_LOG(LogTemp, Log, TEXT("Creating actors..."));
 
-	if (Width <= 0.0f || Depth <= 0.0f || Height <= 0.0f || Columns <= 0 || Rows < 0 || Planes <= 0 || ActorTemplate == nullptr)
+	if (Width <= 0.0f || Depth <= 0.0f || Height <= 0.0f || Columns <= 0 || Rows <= 0 || Planes <= 0 || ActorTemplate == nullptr)
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s check your actor creator settings."), *GetName());
+		UE_LOG(LogTemp, Error, TEXT("%s check your actor creator settings."), *GetName());
 		return;
 	}
 
