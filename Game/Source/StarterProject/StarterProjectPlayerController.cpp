@@ -4,6 +4,8 @@
 #include "SpatialNetDriver.h"
 #include "EntityRegistry.h"
 
+#include "Engine/World.h"
+
 bool AStarterProjectPlayerController::TestRPC_Validate()
 {
 	return true;
