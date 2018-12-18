@@ -1,0 +1,3 @@
+[submodule "Game/Plugins/UnrealGDK"]
+	path = Game/Plugins/UnrealGDK
+url=https://cyberbibby@github.com/cyberbibby/UnrealGDK.git
