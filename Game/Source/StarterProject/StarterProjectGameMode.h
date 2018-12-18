@@ -13,4 +13,12 @@ class AStarterProjectGameMode : public AGameModeBase
 
 public:
 	AStarterProjectGameMode();
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spatial Networking")
+	int32 MaxActorsToReplicate;
+
+private:
+	bool bHasUpdatedMaxActorsToReplicate = false;
 };
