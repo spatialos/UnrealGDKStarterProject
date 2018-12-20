@@ -14,6 +14,7 @@
 #include "SpatialNetDriver.h"
 #include "Utils/EntityRegistry.h"
 
+#include "Companion.h"
 #include "Interactable.h"
 #include "Interactions/InteractionManager.h"
 
@@ -62,6 +63,31 @@ AStarterProjectCharacter::AStarterProjectCharacter()
 void AStarterProjectCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if ((GetNetDriver() == nullptr || !GetNetDriver()->IsA(USpatialNetDriver::StaticClass())) && HasAuthority())
+	{
+		OnAuthorityGained();
+	}
+}
+
+void AStarterProjectCharacter::OnAuthorityGained()
+{
+	Super::OnAuthorityGained();
+
+	if (Companion == nullptr && Role == ROLE_Authority)
+	{
+		if (CompanionTemplate != nullptr)
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			FVector SpawnLocation = GetActorLocation();
+			Companion = GetWorld()->SpawnActor<AActor>(CompanionTemplate, FTransform(FRotator::ZeroRotator, SpawnLocation), SpawnParams);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("CompanionTemplate empty for character %s"), *this->GetPathName());
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -93,6 +119,13 @@ void AStarterProjectCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AStarterProjectCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AStarterProjectCharacter::TouchStopped);
+}
+
+void AStarterProjectCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AStarterProjectCharacter, Companion);
 }
 
 void AStarterProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)

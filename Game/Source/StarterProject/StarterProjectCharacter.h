@@ -28,6 +28,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual void OnAuthorityGained() override;
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
@@ -63,9 +65,9 @@ protected:
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
 protected:
-	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	// End of APawn interface
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerInteract(AActor* Target);
@@ -102,6 +104,12 @@ protected:
 	FString PackageToLoad;
 	UPROPERTY(EditDefaultsOnly, Category = "Testing")
 	FString AssetToLoad;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Testing")
+	TSubclassOf<class ACompanion> CompanionTemplate;
+
+	UPROPERTY(Replicated)
+	AActor* Companion;
 
 public:
 	/** Returns CameraBoom subobject **/
