@@ -33,7 +33,7 @@ void AStarterProjectGameMode::Tick(float DeltaSeconds)
 			{
 				if (USpatialNetConnection* SNC = SND->GetSpatialOSNetConnection())
 				{
-					SNC->SetMaxActorsToReplicatePerFrame(MaxActorsToReplicate);
+					//SNC->SetMaxActorsToReplicatePerFrame(MaxActorsToReplicate);
 					bHasUpdatedMaxActorsToReplicate = true;
 				}
 			}
