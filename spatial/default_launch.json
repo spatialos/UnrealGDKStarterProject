@@ -19,6 +19,10 @@
         {
           "name": "qos_max_unacked_pings_rate",
           "value": "10"
+        },
+        {
+          "name": "bridge_soft_handover_enabled",
+          "value": "false"
         }
       ],
     "snapshots": {
