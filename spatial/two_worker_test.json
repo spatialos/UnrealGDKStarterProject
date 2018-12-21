@@ -17,6 +17,10 @@
         "value": "0"
       },
       {
+        "name": "bridge_soft_handover_enabled",
+        "value": "false"
+      },
+      {
         "name": "worker_start_connection_timeout_ms",
         "value": "60000"
       }
