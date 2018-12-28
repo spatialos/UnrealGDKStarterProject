@@ -13,7 +13,7 @@ class STARTERPROJECT_API UInteractMenuBase : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void Init(class UInteractionManager* InteractionManager);
+	void Init(class UInteractionManager* InInteractionManager);
 
 	UFUNCTION(BlueprintPure, Category = "Interactions")
 	class UInteractionManager* GetInteractionManager() const;

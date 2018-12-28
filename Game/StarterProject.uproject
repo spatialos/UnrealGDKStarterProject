@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{B6DA85AF-48B0-32D3-205E-B6A38BE20413}",
+	"EngineAssociation": "{6396D808-40D7-6477-D069-D6B211065150}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -12,7 +12,7 @@
 				"Engine",
 				"CoreUObject",
 				"UMG",
-        "TestWorldGenerator"
+				"TestWorldGenerator"
 			]
 		},
 		{

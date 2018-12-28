@@ -13,7 +13,7 @@ AStarterProjectGameMode::AStarterProjectGameMode()
 	PrimaryActorTick.bCanEverTick = true;
 
 	//set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/StarterProject/Characters/PlayerCharacter_BP"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/EntityBlueprints/StarterProjectCharacter_BP"));
 	if (PlayerPawnBPClass.Class != NULL)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
@@ -23,20 +23,21 @@ AStarterProjectGameMode::AStarterProjectGameMode()
 	bUseSeamlessTravel = false;
 }
 
-void AStarterProjectGameMode::Tick(float DeltaSeconds)
-{
-	if (GetNetMode() == NM_DedicatedServer && !bHasUpdatedMaxActorsToReplicate)
-	{
-		if (USpatialNetDriver* SND = Cast<USpatialNetDriver>(GetWorld()->GetNetDriver()))
-		{
-			if (SND->Connection && SND->Connection->IsConnected())
-			{
-				if (USpatialNetConnection* SNC = SND->GetSpatialOSNetConnection())
-				{
-					//SNC->SetMaxActorsToReplicatePerFrame(MaxActorsToReplicate);
-					bHasUpdatedMaxActorsToReplicate = true;
-				}
-			}
-		}
-	}
-}
+//void AStarterProjectGameMode::Tick(float DeltaSeconds)
+//{
+//	if (GetNetMode() == NM_DedicatedServer && !bHasUpdatedMaxActorsToReplicate)
+//	{
+//		if (USpatialNetDriver* SND = Cast<USpatialNetDriver>(GetWorld()->GetNetDriver()))
+//		{
+//			if (SND->Connection && SND->Connection->IsConnected())
+//			{
+//				if (USpatialNetConnection* SNC = SND->GetSpatialOSNetConnection())
+//				{
+//					SNC->SetMaxActorsToReplicatePerFrame(MaxActorsToReplicate);
+//					bHasUpdatedMaxActorsToReplicate = true;
+//				}
+//			}
+//		}
+//	}
+//}
+

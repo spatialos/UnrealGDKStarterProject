@@ -3,9 +3,9 @@
 #include "UI/InteractMenuBase.h"
 
 
-void UInteractMenuBase::Init(class UInteractionManager* InteractionManager)
+void UInteractMenuBase::Init(class UInteractionManager* InInteractionManager)
 {
-	this->InteractionManager = InteractionManager;
+	InteractionManager = InInteractionManager;
 }
 
 UInteractionManager* UInteractMenuBase::GetInteractionManager() const
