@@ -38,10 +38,16 @@ void ACompanion::Tick(float DeltaTime)
 
 void ACompanion::NavigateToOwner(float DeltaTime)
 {
-	AActor* Target = GetOwner();
-	check(Target);
+	AActor* TargetActor = GetOwner();
+	check(TargetActor);
 
-	FVector ToTarget = Target->GetActorLocation() - GetActorLocation();
+	FVector TargetLocation = TargetActor->GetActorLocation();
+	if (FollowTarget != nullptr)
+	{
+		TargetLocation = FollowTarget->GetComponentLocation();
+	}
+
+	FVector ToTarget = TargetLocation - GetActorLocation();
 	SetActorRotation(FQuat::FindBetweenVectors(FQuat::Identity.GetForwardVector(), ToTarget));
 
 	if (ToTarget.SizeSquared() < FollowDistance * FollowDistance)

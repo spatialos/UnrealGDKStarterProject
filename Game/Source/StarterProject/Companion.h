@@ -22,12 +22,17 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void SetFollowTarget(class USceneComponent* NewTarget) { FollowTarget = NewTarget; }
 	
 private:
 	void NavigateToOwner(float DeltaTime);
 
 	UPROPERTY(VisibleAnywhere)
 	class USceneComponent* MyRoot;
+
+	UPROPERTY(Handover)
+	class USceneComponent* FollowTarget;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Companion")
 	float FollowDistance;

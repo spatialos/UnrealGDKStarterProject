@@ -24,6 +24,7 @@
 // AStarterProjectCharacter
 
 AStarterProjectCharacter::AStarterProjectCharacter()
+	: NumCompanionsToSpawn(1)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -56,6 +57,9 @@ AStarterProjectCharacter::AStarterProjectCharacter()
 
 	InteractionManager = CreateDefaultSubobject<UInteractionManager>(TEXT("InteractionManager"));
 
+	CompanionFollowTarget = CreateDefaultSubobject<USceneComponent>(TEXT("CompanionFollowTarget"));
+	CompanionFollowTarget->SetupAttachment(RootComponent);
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -74,14 +78,19 @@ void AStarterProjectCharacter::OnAuthorityGained()
 {
 	Super::OnAuthorityGained();
 
-	if (Companion == nullptr && Role == ROLE_Authority)
+	if (Companions.Num() == 0 && Role == ROLE_Authority)
 	{
-		if (CompanionTemplate != nullptr)
+		if (CompanionTemplate != nullptr && NumCompanionsToSpawn > 0)
 		{
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
 			FVector SpawnLocation = GetActorLocation();
-			Companion = GetWorld()->SpawnActor<AActor>(CompanionTemplate, FTransform(FRotator::ZeroRotator, SpawnLocation), SpawnParams);
+			for (int i = 0; i < NumCompanionsToSpawn; ++i)
+			{
+				ACompanion* NewCompanion = GetWorld()->SpawnActor<ACompanion>(CompanionTemplate, FTransform(FRotator::ZeroRotator, SpawnLocation), SpawnParams);
+				NewCompanion->SetFollowTarget(CompanionFollowTarget);
+				Companions.Add(NewCompanion);
+			}
 		}
 		else
 		{
@@ -125,7 +134,7 @@ void AStarterProjectCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AStarterProjectCharacter, Companion);
+	DOREPLIFETIME(AStarterProjectCharacter, Companions);
 }
 
 void AStarterProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)

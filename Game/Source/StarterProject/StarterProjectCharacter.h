@@ -16,6 +16,9 @@ class AStarterProjectCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	class USceneComponent* CompanionFollowTarget;
+
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
@@ -108,8 +111,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Testing")
 	TSubclassOf<class ACompanion> CompanionTemplate;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Testing")
+	int32 NumCompanionsToSpawn;
+
 	UPROPERTY(Replicated)
-	AActor* Companion;
+	TArray<AActor*> Companions;
 
 public:
 	/** Returns CameraBoom subobject **/
