@@ -1,6 +1,6 @@
 # SpatialOS GDK for Unreal Starter Project
 
-* **LICENSE:** Use of the contents of this repository is subject to the [Improbable license](LICENSE.md)
+* **LICENSE:** Use of the contents of this repository is subject to the [license](LICENSE.md)
 * **REPOSITORY:** github.com/spatialos/UnrealGDKStarterProject
 
 This Starter Project is both a reference project and a starting point for building games on SpatialOS and Unreal Engine 4.  The project uses the `ThirdPersonExampleMap` and a controllable character `AStarterGameCharacter` on a SpatialOS deployment.
