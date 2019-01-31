@@ -11,4 +11,6 @@ AStarterProjectGameMode::AStarterProjectGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+
+	bUseSeamlessTravel = false;
 }
