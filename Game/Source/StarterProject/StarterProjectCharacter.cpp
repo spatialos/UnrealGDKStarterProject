@@ -9,7 +9,6 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "StarterProjectGameStateBase.h"
 #include "SpatialNetDriver.h"
 
 #include "UnrealNetwork.h"
