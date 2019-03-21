@@ -11,7 +11,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SpatialNetDriver.h"
-#include "Utils/EntityRegistry.h"
+
+#include "SpatialPackageMapClient.h"
+#include "Engine/PackageMapClient.h"
 
 #include "Companion.h"
 #include "Interactable.h"
@@ -336,7 +338,7 @@ void AStarterProjectCharacter::QueryActor(AActor* Actor)
 	FString Output = FString::Printf(TEXT("HitActor (%s): %s"), HasAuthority() ? TEXT("Server") : TEXT("Client"), *Actor->GetFullName());
 	if (USpatialNetDriver* SpatialNetDriver = Cast<USpatialNetDriver>(GetNetDriver()))
 	{
-		if (Worker_EntityId EntityId = SpatialNetDriver->GetEntityRegistry()->GetEntityIdFromActor(Actor))
+		if (Worker_EntityId EntityId = SpatialNetDriver->PackageMap->GetEntityIdFromObject(Actor))
 		{
 			Output.Append(FString::Printf(TEXT("\n EntityId: %lld"), EntityId));
 		}
