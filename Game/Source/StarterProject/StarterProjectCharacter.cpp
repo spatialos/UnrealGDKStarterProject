@@ -49,6 +49,12 @@ AStarterProjectCharacter::AStarterProjectCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	static ConstructorHelpers::FObjectFinder<UClass> AICharacterBlueprint(TEXT("Blueprint'/Game/StarterProject/AI/AI_Character.AI_Character_C'"));
+	if (AICharacterBlueprint.Succeeded())
+	{
+		DynamicAICharacter = AICharacterBlueprint.Object;
+	}
 }
 
 void AStarterProjectCharacter::BeginPlay()
@@ -63,7 +69,7 @@ void AStarterProjectCharacter::SetupPlayerInputComponent(class UInputComponent* 
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AStarterProjectCharacter::SpawnNewAICharacter_Server);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AStarterProjectCharacter::MoveForward);
@@ -80,6 +86,24 @@ void AStarterProjectCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AStarterProjectCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AStarterProjectCharacter::TouchStopped);
+}
+
+void AStarterProjectCharacter::SpawnNewAICharacter_Server_Implementation()
+{
+	const FVector ActorLocation = GetActorLocation();
+	const FVector ForwardVector = GetActorForwardVector();
+
+	const FVector SpawnLocation = ActorLocation + (10.0f * ForwardVector);
+
+	const FRotator Rotation = GetActorRotation();
+
+	FActorSpawnParameters SpawnParams;
+	GetWorld()->SpawnActor<ACharacter>(DynamicAICharacter, SpawnLocation, Rotation, SpawnParams);
+}
+
+bool AStarterProjectCharacter::SpawnNewAICharacter_Server_Validate()
+{
+	return true;
 }
 
 void AStarterProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)

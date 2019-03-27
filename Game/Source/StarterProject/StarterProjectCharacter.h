@@ -70,6 +70,13 @@ protected:
 	UFUNCTION(NetMulticast, Unreliable, WithValidation)
 	void TestMulticast();
 
+private:
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void SpawnNewAICharacter_Server();
+
+	TSubclassOf<ACharacter> DynamicAICharacter;
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
