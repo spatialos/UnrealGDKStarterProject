@@ -19,8 +19,10 @@ public class StarterProject : ModuleRules
 				"OnlineSubsystemUtils",
 				"PhysXVehicles",
         "UMG",
-        "TestWorldGenerator",
-				"SpatialGDK"
+//#if UE_EDITOR
+//        "TestWorldGenerator",
+//#endif
+                "SpatialGDK"
 			});
 	}
 }

@@ -24,7 +24,7 @@ public class TestWorldGenerator : ModuleRules
                 "Engine",
                 "EngineSettings",
                 "InputCore",
-                "LevelEditor",
+                //"LevelEditor",
                 "Projects",
                 "Slate",
                 "SlateCore",
