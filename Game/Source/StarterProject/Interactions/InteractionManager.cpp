@@ -115,6 +115,10 @@ void UInteractionManager::DoAction(FName ActionName)
 
 bool UInteractionManager::IsActorInteractable(AActor* Target)
 {
+	if (Target == nullptr)
+	{
+		return false;
+	}
 	FName MenuName = Target->GetClass()->GetFName();
 	FInteractionMenuData* MenuData = MenuDataTable->FindRow<FInteractionMenuData>(MenuName, TEXT(""));
 	return MenuData != nullptr;
