@@ -43,6 +43,9 @@ void AActorCreator::CreateActors()
 	float ZStep = Height / FMath::Max(1, Planes-1);
 
 	FActorSpawnParameters SpawnParams;
+	int iterationNumber = CreatedActorCount / 100;
+	int xOffset = (iterationNumber % Columns) * 200;
+	int yOffset = (iterationNumber / Columns) * 200;
 
 	for (int X = 0; X < Columns; ++X)
 	{
@@ -50,7 +53,7 @@ void AActorCreator::CreateActors()
 		{
 			for (int Z = 0; Z < Planes; ++Z)
 			{
-				FVector Location(XStep * X, YStep * Y, ZStep * Z);
+				FVector Location(XStep * X + xOffset, YStep * Y + yOffset, ZStep * Z);
 				Location += GetActorLocation() + SpawnOffset;
 				CreatedActors.Add(GetWorld()->SpawnActor(ActorTemplate, &Location, &FRotator::ZeroRotator, SpawnParams));
 			}
