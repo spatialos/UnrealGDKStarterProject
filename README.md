@@ -1,3 +1,5 @@
+# This project is deprecated and no longer used. Please visit [here](https://docs.improbable.io/unreal/latest/) for the latest on the GDK for Unreal
+
 # SpatialOS GDK for Unreal Starter Project
 
 * **LICENSE:** Use of the contents of this repository is subject to the [license](LICENSE.md)
